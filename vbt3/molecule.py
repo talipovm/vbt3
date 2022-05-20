@@ -51,13 +51,20 @@ class Molecule:
         if nL != nR:
             return 0
 
+        if nL == 0:
+            return '1' if op == 'S' else '0'  # no orbitals, the vacuum case;
+
         lL = L_orbs.lower()
         lR = R_orbs.lower()
 
         elems = ''
         v = ['',] * nL
+        vi = 0
         for i_op in range(nL):
             elem = ''
+            vp = ['',] * nL
+            vpi = 0
+            # the product part
             for j in range(nL):
                 o = op if i_op == j else 'S'
                 a, b = lL[j], lR[j]
@@ -80,27 +87,30 @@ class Molecule:
 
                 # replace the site energies H_ii by zero if allowed
                 if self.zero_ii and (a == b) and (o == 'H'):
-                    elem = '0'
+                    vp = ['0']
+                    vpi += 1
                     break
 
-                # substitute certain AO matrix elements if neede
+                # substitute certain AO matrix elements if needed
                 if s in self.subst:
                     s = self.subst[s]
 
-                elem += '*' + s
+                if s != '1':
+                    vp[vpi] = s
+                    vpi += 1
+
+            if vpi == 0: # all 1s
+                elem = '1'
+            else:
+                elem = '*'.join(vp[:vpi])
 
             if elem != '0':
-                # elems += elem[1:] + ' + '
-                v[i_op] = elem[1:] + ' + '
+                v[vi] = elem
+                vi += 1
 
-        elems = ''.join(v)
+        elems = ' + '.join(v[:vi])
 
-        if len(elems) == 0:
-            elems = '1' if op == 'S' else '0'  # no orbitals, the vacuum case;
-        else:
-            elems = '(%s)' % (elems[:-3])  # remove trailing ' + '
-
-        return elems
+        return '(%s)' % elems
 
     op_orbprod = Op_Hartree_product
 
@@ -114,7 +124,7 @@ class Molecule:
 
         [R_orbs, R_signs] = R.get_orbital_permutations()
         # sm = ''
-        v = ['',]*len(R_orbs)
+        v = ['', ] * len(R_orbs)
         i = 0
         for R_orb, R_sign in zip(R_orbs, R_signs):
             elems = self.op_orbprod(L.det_string, R_orb, op=op)
@@ -126,12 +136,12 @@ class Molecule:
                 v[i] = '-(%s)' % elems
             i += 1
 
-        sm = ''.join(v)
+        sm = ''.join(v[:i])
 
         # simple cleanup
         if sm[0] == '+':
             sm = sm[1:]
-        return sm
+        return '(%s)' % sm
 
     def op_fixed_psi(self, L, R, op='H'):
         s = ''
@@ -140,6 +150,8 @@ class Molecule:
             s = '1' if op == 'S' else 0
             return s
 
+        v = ['', ] * len(L.determinants) * len(R.determinants)
+        i = 0
         for dL in L.determinants:
             for dR in R.determinants:
                 detL = SlaterDet(dL['det_string'])
@@ -154,12 +166,16 @@ class Molecule:
                 elif prd == -1:
                     prefix = '-'
                 else:
-                    prefix = '+(%f)*' % (prd)
+                    prefix = '+(%f)*' % prd
 
-                s = s + '%s(%s)' % (prefix, elem)
+                # s = s + '%s(%s)' % (prefix, elem)
+                v[i] = '%s(%s)' % (prefix, elem)
+                i += 1
 
+        s = ''.join(v[:i])
         # simple cleanup
-        if s[0] == '+': s = s[1:]
+        if s[0] == '+':
+            s = s[1:]
         return s
 
     def Op(self, L, R, op='H'):

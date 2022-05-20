@@ -15,11 +15,14 @@ file = open(fname, 'rb')
 benzene = pickle.load(file)
 file.close()
 
-print('Started calculating the energy')
-E = m.energy(benzene)
-print('Done, saving the results')
+unnorm_e = m.Op(benzene,benzene,op='H')
 
-fname = dir + 'benzene-energy.pickle'
-file = open(fname, 'wb')
-pickle.dump(E, file)
-file.close()
+print(len(unnorm_e))
+# print('Started calculating the energy')
+# E = m.energy(benzene)
+# print('Done, saving the results')
+
+# fname = dir + 'benzene-energy.pickle'
+# file = open(fname, 'wb')
+# pickle.dump(E, file)
+# file.close()

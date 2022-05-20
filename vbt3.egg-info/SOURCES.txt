@@ -4,6 +4,7 @@ vbt3/fixed_psi.py
 vbt3/functions.py
 vbt3/molecule.py
 vbt3/numerical.py
+vbt3/old_molecule.py
 vbt3/orbital_permutations.py
 vbt3/slaterdet.py
 vbt3/test_functions.py

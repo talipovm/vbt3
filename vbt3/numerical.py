@@ -3,7 +3,7 @@ import scipy.linalg
 from vbt3 import FixedPsi
 
 # manual control of the parallelization feature
-PARALLEL = True
+PARALLEL = False
 
 RAY_IMPORTED = False
 if PARALLEL:

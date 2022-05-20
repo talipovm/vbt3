@@ -36,7 +36,11 @@ class FixedPsi:
             raise Exception('ds is %s instead of str' % (type(det_string)))
         if self.contains_det(det_string):
             raise Exception('New determinant %s is already in the list' % (det_string))
-        self.determinants.append({'det_string':det_string,'coef':coef})
+        if int(coef) == coef:
+            cf = int(coef)
+        else:
+            cf = coef
+        self.determinants.append({'det_string':det_string, 'coef':cf})
         self.Nel = len(det_string)
 
     def add_FixedPsi(self, p, coef=1.0):
