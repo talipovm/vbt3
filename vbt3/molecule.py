@@ -99,18 +99,18 @@ class Molecule:
                     vp[vpi] = s
                     vpi += 1
 
-            if vpi == 0: # all 1s
+            if vpi == 0: # all 1
                 elem = '1'
             else:
-                elem = '*'.join(vp[:vpi])
+                if '0' in vp:
+                    elem = '0'
+                else:
+                    elem = '*'.join(vp[:vpi])
 
             v[vi] = elem
             vi += 1
 
-        if '0' in v:
-            elems = '0'
-        else:
-            elems = ' + '.join(v[:vi])
+        elems = ' + '.join(v[:vi])
 
         return '(%s)' % elems
 
