@@ -2,14 +2,21 @@ import numpy
 import scipy.linalg
 from vbt3 import FixedPsi
 
+# manual control of the parallelization feature
+PARALLEL = True
 
-try:
-    import ray
-    RAY_IMPORTED = True
-    my_decor = ray.remote
-except ImportError as e:
-    RAY_IMPORTED = False
+RAY_IMPORTED = False
+if PARALLEL:
+    # attempt to import ray
+    try:
+        import ray
+        RAY_IMPORTED = True
+        my_decor = ray.remote
+    except ImportError as e:
+        pass
 
+if not (PARALLEL and RAY_IMPORTED):
+    # No parallelization; use a dummy decorator
     def my_decor(func):
         return func
 

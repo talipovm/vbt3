@@ -55,7 +55,7 @@ class Molecule:
         lR = R_orbs.lower()
 
         elems = ''
-        v = ['',] * nL * nL
+        v = ['',] * nL
         for i_op in range(nL):
             elem = ''
             for j in range(nL):
@@ -89,10 +89,9 @@ class Molecule:
 
                 elem += '*' + s
 
-            # if elem != '0':
-            #     elems += elem[1:] + ' + '
-
-            v[i_op*nL+j] = elem[1:] + ' + '
+            if elem != '0':
+                # elems += elem[1:] + ' + '
+                v[i_op] = elem[1:] + ' + '
 
         elems = ''.join(v)
 
