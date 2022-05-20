@@ -109,15 +109,22 @@ class Molecule:
             return 0
 
         [R_orbs, R_signs] = R.get_orbital_permutations()
-        sm = ''
+        # sm = ''
+        v = ['',]*len(R_orbs)
+        i = 0
         for R_orb, R_sign in zip(R_orbs, R_signs):
             elems = self.op_orbprod(L.det_string, R_orb, op=op)
             if len(elems) == '0':
                 return '0'
             if R_sign == 1:
-                sm += '+(%s)' % elems
+                #sm += '+(%s)' % elems
+                v[i] = '+(%s)' % elems
             else:
-                sm += '-(%s)' % elems
+                #sm += '-(%s)' % elems
+                v[i] = '-(%s)' % elems
+            i += 1
+
+        sm = ''.join(v)
 
         # simple cleanup
         if sm[0] == '+':
