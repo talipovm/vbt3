@@ -55,6 +55,7 @@ class Molecule:
         lR = R_orbs.lower()
 
         elems = ''
+        v = ['',] * nL * nL
         for i_op in range(nL):
             elem = ''
             for j in range(nL):
@@ -88,8 +89,12 @@ class Molecule:
 
                 elem += '*' + s
 
-            if elem != '0':
-                elems += elem[1:] + ' + '
+            # if elem != '0':
+            #     elems += elem[1:] + ' + '
+
+            v[i_op*nL+j] = elem[1:] + ' + '
+
+        elems = ''.join(v)
 
         if len(elems) == 0:
             elems = '1' if op == 'S' else '0'  # no orbitals, the vacuum case;
@@ -117,10 +122,8 @@ class Molecule:
             if len(elems) == '0':
                 return '0'
             if R_sign == 1:
-                #sm += '+(%s)' % elems
                 v[i] = '+(%s)' % elems
             else:
-                #sm += '-(%s)' % elems
                 v[i] = '-(%s)' % elems
             i += 1
 
