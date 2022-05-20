@@ -156,6 +156,46 @@ class Molecule:
             s = '1' if op == 'S' else 0
             return s
 
+        vo = ['', ] * len(L.determinants)
+        io = 0
+        for dL in L.determinants:
+            vi = ['', ] * len(L.determinants)
+            ii = 0
+            for dR in R.determinants:
+                detL = SlaterDet(dL['det_string'])
+                detR = SlaterDet(dR['det_string'])
+
+                elem = self.op_det(detL, detR, op=op)
+
+                prd = dL['coef'] * dR['coef']
+
+                if prd == 1:
+                    prefix = '+'
+                elif prd == -1:
+                    prefix = '-'
+                else:
+                    prefix = '+(%f)*' % prd
+
+                # s = s + '%s(%s)' % (prefix, elem)
+                vi[ii] = '%s(%s)' % (prefix, elem)
+                ii += 1
+
+            vo[io] = '(%s)' % str(sp.simplify(''.join(vi[:ii])))
+            io += 1
+
+        s = '+'.join(vo[:io])
+        # simple cleanup
+        if s[0] == '+':
+            s = s[1:]
+        return s
+
+    def op_fixed_psi_old(self, L, R, op='H'):
+        s = ''
+
+        if len(L.determinants) == 0:
+            s = '1' if op == 'S' else 0
+            return s
+
         v = ['', ] * len(L.determinants) * len(R.determinants)
         i = 0
         for dL in L.determinants:
