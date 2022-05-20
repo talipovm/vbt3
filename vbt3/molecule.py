@@ -107,10 +107,14 @@ class Molecule:
                 else:
                     elem = '*'.join(vp[:vpi])
 
-            v[vi] = elem
-            vi += 1
+            if elem != '0':
+                v[vi] = elem
+                vi += 1
 
-        elems = ' + '.join(v[:vi])
+        if vi == 0: # all 0
+            elems = '0'
+        else:
+            elems = ' + '.join(v[:vi])
 
         return '(%s)' % elems
 

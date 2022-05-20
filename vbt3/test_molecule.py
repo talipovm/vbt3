@@ -16,13 +16,13 @@ class TestMolecule(unittest.TestCase):
     def test_op_hartree_product_2(self):
         self.assertEqual(
             str(Molecule().Op_Hartree_product('aAbBcC', 'aAbBcC', op='H')),
-            '(0 + 0 + 0 + 0 + 0 + 0)'
+            '(0)'
         )
 
     def test_op_hartree_product_3(self):
         self.assertEqual(
             str(Molecule().Op_Hartree_product('aA', 'aB', op='H')),
-            '(0 + H_ab)'
+            '(H_ab)'
         )
     def test_op_1(self):
         self.assertEqual(
