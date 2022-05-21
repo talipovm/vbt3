@@ -20,6 +20,10 @@ class SlaterDet:
         if len(self.det_string) > 0:
             self.parse_det()
 
+    def __repr__(self):
+        s = '|%s|' % self.det_string
+        return s
+
     def parse_det(self):
         s = self.det_string
         if len(s) == 0:
