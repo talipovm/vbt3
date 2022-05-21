@@ -44,7 +44,7 @@ class FixedPsi:
 
     def add_FixedPsi(self, p, coef=1.0):
         for d in p.determinants:
-            self.add_str_det(d['det_string'], d['coef'] * coef)
+            self.add_str_det(d['det_string'], attempt_int(d['coef'] * coef))
 
     def couple_orbitals(self, o1, o2):
         # generate determinants that represent a singlet bonding coupling between two orbitals.
