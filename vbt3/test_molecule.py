@@ -1,8 +1,7 @@
 import unittest
-from unittest import TestCase
 
 from vbt3 import FixedPsi, Molecule
-from vbt3.functions import generate_dets
+from vbt3.fixed_psi import generate_dets
 
 
 class TestMolecule(unittest.TestCase):

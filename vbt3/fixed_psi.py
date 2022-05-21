@@ -1,3 +1,4 @@
+from vbt3.functions import generate_det_strings
 from vbt3.functions import attempt_int
 
 
@@ -79,3 +80,17 @@ class FixedPsi:
             s = s[1:]
         return s
 
+
+def generate_dets(Nela, Nelb, Norb):
+    """
+    Generate all possible determinants for a given number of electrons and atomic orbitals.
+    :param Nela: Number of alpha electrons
+    :param Nelb: Number of beta electrons
+    :param Norb: Number of atomic orbitals
+    :return: List of FixedPsi objects, each containing one determinant
+    """
+    L = generate_det_strings(Nela, Nelb, Norb)
+    PP = [None,]*len(L)
+    for i in range(len(L)):
+        PP[i] = FixedPsi(L[i])
+    return PP

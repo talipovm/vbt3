@@ -1,5 +1,4 @@
 import string
-from vbt3 import FixedPsi
 from itertools import combinations
 
 
@@ -22,21 +21,6 @@ def generate_det_strings(Na, Nb, Norbs):
                 s += a[i]
             result.append(s)
     return result
-
-
-def generate_dets(Nela, Nelb, Norb):
-    """
-    Generate all possible determinants for a given number of electrons and atomic orbitals.
-    :param Nela: Number of alpha electrons
-    :param Nelb: Number of beta electrons
-    :param Norb: Number of atomic orbitals
-    :return: List of FixedPsi objects, each containing one determinant
-    """
-    L = generate_det_strings(Nela, Nelb, Norb)
-    PP = [None,]*len(L)
-    for i in range(len(L)):
-        PP[i] = FixedPsi(L[i])
-    return PP
 
 
 def attempt_int(x):
