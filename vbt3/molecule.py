@@ -1,5 +1,6 @@
 import sympy as sp
 
+from vbt3.functions import attempt_int
 from vbt3.numerical import get_coupled
 from vbt3.slaterdet import SlaterDet
 from vbt3.fixed_psi import FixedPsi
@@ -167,8 +168,7 @@ class Molecule:
 
                 elem = self.op_det(detL, detR, op=op)
 
-                prd = dL['coef'] * dR['coef']
-
+                prd = attempt_int(dL['coef'] * dR['coef'])
                 if prd == 1:
                     prefix = '+'
                 elif prd == -1:

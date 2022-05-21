@@ -37,3 +37,19 @@ def generate_dets(Nela, Nelb, Norb):
     for i in range(len(L)):
         PP[i] = FixedPsi(L[i])
     return PP
+
+
+def attempt_int(x):
+    """
+    Convert a float to int if it is numerically equivalent
+    Parameters
+    ----------
+    x: a number (float)
+    Returns
+    -------
+    int or float
+    """
+    if x == int(x):
+        return int(x)
+    else:
+        return x
