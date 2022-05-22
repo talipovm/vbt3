@@ -174,7 +174,7 @@ class Molecule:
                 elif prd == -1:
                     prefix = '-'
                 else:
-                    prefix = '+(%f)*' % prd
+                    prefix = '+(%s)*' % str(prd)
 
                 # s = s + '%s(%s)' % (prefix, elem)
                 vi[ii] = '%s(%s)' % (prefix, elem)
