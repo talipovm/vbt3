@@ -16,7 +16,7 @@ class SlaterDet:
         self.beta_indices = []
         self.beta_string = ''
         self.spins = ''
-        self.nel = 0
+        self.Nel = 0
         if len(self.det_string) > 0:
             self.parse_det()
 
@@ -40,7 +40,7 @@ class SlaterDet:
                 self.spins += '-'
                 self.beta_string += c
             i = i + 1
-        self.nel = i
+        self.Nel = i
 
     def get_orbital_permutations(self):
         # gets all spin-restricted permutations of orbital products
@@ -68,8 +68,8 @@ class SlaterDet:
         return ([dets, signs])
 
     def is_compatible(self, R):
-        if self.nel != R.nel:
-            logging.warning('Different number of electrons: %i vs %i' % (self.nel, R.nel))
+        if self.Nel != R.Nel:
+            logging.warning('Different number of electrons: %i vs %i' % (self.Nel, R.Nel))
             return (False)
         if self.spins != R.spins:
             logging.warning('The determinant spins are incompatible: %s vs %s' % (self.spins, R.spins))
