@@ -1,6 +1,6 @@
 import sympy as sp
 
-from vbt3.functions import attempt_int
+from vbt3.functions import attempt_int, standardize_det
 from vbt3.numerical import get_coupled
 from vbt3.slaterdet import SlaterDet
 from vbt3.fixed_psi import FixedPsi
@@ -288,3 +288,65 @@ class Molecule:
             mH = self.build_matrix(P, op='H')
         couplings = get_coupled(mS=mS, mH=mH, N_tries=N_tries, precision=precision,ranges=ranges)
         return get_combined_from_dict(P, couplings)
+
+    def o2(self, D1, D2):
+        """
+        Computes the two-electron integrals between two determinants
+        Parameters
+        ----------
+        D1, D2: two objects SlaterDet
+
+        Returns
+        -------
+        Sympy symbolic expression, T_abcd \equiv <ab|cd>
+        """
+        assert D1.Nel == D2.Nel, 'Different number of electrons'
+        Nel = D1.Nel
+        D1s = D1.det_string
+        D2s = D2.det_string
+        off = int(Nel * (Nel - 1) / 2)
+        result = ['', ] * 2 * off ** 2
+        ind = 0
+        for i in range(Nel):
+            for j in range(i + 1, Nel):
+                s1 = D1s[:i] + D1s[i + 1:j] + D1s[j + 1:]
+                c1, c2 = D1s[i], D1s[j]
+                sumL = c1.islower() + c2.islower()
+
+                sd1, f1 = standardize_det(s1)
+
+                for k in range(Nel):
+                    for m in range(k + 1, Nel):
+                        s2 = D2s[:k] + D2s[k + 1:m] + D2s[m + 1:]
+                        c3, c4 = D2s[k], D2s[m]
+
+                        sumR = c3.islower() + c4.islower()
+                        if sumL != sumR:
+                            continue
+
+                        sd2, f2 = standardize_det(s2)
+
+                        opS = self.Op(sd1, sd2, op='S')
+                        if opS == '(0)':
+                            continue
+
+                        parity = (i + j + k + m + f1 + f2) % 2
+
+                        if c1.islower() == c3.islower():
+                            iv = (c1.lower(), c2.lower(), c3.lower(), c4.lower())
+                            indices = '%s%s%s%s' % iv
+                            sign = '(1)' if parity == 0 else '(-1)'
+
+                            result[ind] = '%i * %s * T_%s * (%s)' % (2 * off, sign, indices, opS)
+                            ind += 1
+
+                        if c1.islower() == c4.islower():
+                            iv = (c1.lower(), c2.lower(), c4.lower(), c3.lower())
+                            indices = '%s%s%s%s' % iv
+                            sign = '(1)' if parity == 1 else '(-1)'
+
+                            result[ind] = '%i * %s * T_%s * (%s)' % (2 * off, sign, indices, opS)
+                            ind += 1
+        return ' + '.join(result[:ind])
+
+

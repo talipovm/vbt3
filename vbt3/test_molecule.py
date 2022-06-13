@@ -1,6 +1,7 @@
 import unittest
+import sympy as sp
 
-from vbt3 import FixedPsi, Molecule
+from vbt3 import FixedPsi, Molecule, SlaterDet
 from vbt3.fixed_psi import generate_dets
 
 
@@ -23,6 +24,7 @@ class TestMolecule(unittest.TestCase):
             str(Molecule().Op_Hartree_product('aA', 'aB', op='H')),
             '(H_ab)'
         )
+
     def test_op_1(self):
         self.assertEqual(
             str(Molecule(zero_ii=False).Ops('AbCd', 'AbCd')),
@@ -107,6 +109,39 @@ class TestMolecule(unittest.TestCase):
         self.assertEqual(
             str(result),
             '[|aA|+|aC|+2|bB|+|cA|+|cC|, |aB|+|bA|+|bC|+|cB|]'
+        )
+
+    def test_o2_1(self):
+        m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab',])
+        d1 = SlaterDet('aB')
+        d2 = SlaterDet('aB')
+        s = m.o2(d1, d2)
+        self.assertEqual(
+            str(sp.simplify(s)),
+            '2*T_abab'
+        )
+
+    def test_o2_2(self):
+        m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab',])
+        d1 = SlaterDet('ab')
+        d2 = SlaterDet('ab')
+        s = m.o2(d1, d2)
+        self.assertEqual(
+            str(sp.simplify(s)),
+            '2*T_abab - 2*T_abba'
+        )
+
+    def test_o2_3(self):
+        m = Molecule(zero_ii=True,
+                     subst={'s': ('S_ab', 'S_bc', 'S_cd'),
+                            'h': ('H_ab', 'H_bc', "H_cd")},
+                     interacting_orbs=['ab', 'bc', 'cd'])
+        d1 = SlaterDet('aBc')
+        d2 = SlaterDet('aBd')
+        s = m.o2(d1, d2)
+        self.assertEqual(
+            str(sp.simplify(s)),
+            '6*T_abab*s + 6*T_acad - 6*T_acda + 6*T_bcbd'
         )
 
 
