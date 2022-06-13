@@ -13,15 +13,16 @@ def generate_det_strings(Na, Nb, Norbs):
     :param Norbs: Number of atomic orbitals
     :return: list of determinant strings
     """
-    assert Na >= Nb, 'Na cannot be smaller than Nb'
     result = []
     for a in combinations(string.ascii_lowercase[:Norbs], Na):
         for b in combinations(string.ascii_uppercase[:Norbs], Nb):
             s = ''
-            for i in range(Nb):
+            for i in range(min(Na, Nb)):
                 s += a[i] + b[i]
-            for i in range(Nb,Na):
+            for i in range(Nb, Na): # if Na > Nb
                 s += a[i]
+            for i in range(Na, Nb): # if Nb > Na
+                s += b[i]
             result.append(s)
     return result
 

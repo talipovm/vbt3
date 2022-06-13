@@ -4,10 +4,22 @@ from vbt3.functions import generate_det_strings, attempt_int, place_low, place_h
 
 class TestFixedPsi(TestCase):
 
-    def test_generate_det_strings(self):
+    def test_generate_det_strings_1(self):
         self.assertEqual(
             str(generate_det_strings(2, 2, 3)),
             "['aAbB', 'aAbC', 'aBbC', 'aAcB', 'aAcC', 'aBcC', 'bAcB', 'bAcC', 'bBcC']"
+        )
+
+    def test_generate_det_strings_2(self):
+        self.assertEqual(
+            str(generate_det_strings(2, 0, 3)),
+            "['ab', 'ac', 'bc']"
+        )
+
+    def test_generate_det_strings_3(self):
+        self.assertEqual(
+            str(generate_det_strings(0, 2, 3)),
+            "['AB', 'AC', 'BC']"
         )
 
     def test_place_low(self):

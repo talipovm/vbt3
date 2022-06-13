@@ -5,4 +5,4 @@ from vbt3.molecule import Molecule
 import logging
 logging.basicConfig(format=('%(levelname)-8s: %(message)s'))
 
-__version__ = "1.71"
+__version__ = "1.72"
