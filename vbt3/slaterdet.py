@@ -31,7 +31,7 @@ class SlaterDet:
 
         i = 0
         for c in s:
-            if c.isupper():
+            if c.islower():
                 self.alpha_indices.append(i)
                 self.spins += '+'
                 self.alpha_string += c
