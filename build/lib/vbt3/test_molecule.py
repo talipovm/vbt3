@@ -1,8 +1,7 @@
 import unittest
-from unittest import TestCase
 
 from vbt3 import FixedPsi, Molecule
-from vbt3.functions import generate_dets
+from vbt3.fixed_psi import generate_dets
 
 
 class TestMolecule(unittest.TestCase):
@@ -13,6 +12,17 @@ class TestMolecule(unittest.TestCase):
             '(H_ac*S_ac*S_bd*S_bd + S_ac*H_ac*S_bd*S_bd + S_ac*S_ac*H_bd*S_bd + S_ac*S_ac*S_bd*H_bd)'
         )
 
+    def test_op_hartree_product_2(self):
+        self.assertEqual(
+            str(Molecule().Op_Hartree_product('aAbBcC', 'aAbBcC', op='H')),
+            '(0)'
+        )
+
+    def test_op_hartree_product_3(self):
+        self.assertEqual(
+            str(Molecule().Op_Hartree_product('aA', 'aB', op='H')),
+            '(H_ab)'
+        )
     def test_op_1(self):
         self.assertEqual(
             str(Molecule(zero_ii=False).Ops('AbCd', 'AbCd')),

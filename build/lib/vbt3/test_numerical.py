@@ -1,7 +1,7 @@
 from unittest import TestCase
 from vbt3 import Molecule, FixedPsi
 from vbt3.numerical import get_coupled, get_combined, validate_solution, get_combined_from_dict
-from vbt3.functions import generate_dets
+from fixed_psi import generate_dets
 
 
 class Test(TestCase):

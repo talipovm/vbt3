@@ -1,3 +1,5 @@
+from vbt3.functions import generate_det_strings
+from vbt3.functions import attempt_int
 
 
 class FixedPsi:
@@ -36,16 +38,13 @@ class FixedPsi:
             raise Exception('ds is %s instead of str' % (type(det_string)))
         if self.contains_det(det_string):
             raise Exception('New determinant %s is already in the list' % (det_string))
-        if int(coef) == coef:
-            cf = int(coef)
-        else:
-            cf = coef
+        cf = attempt_int(coef)
         self.determinants.append({'det_string':det_string, 'coef':cf})
         self.Nel = len(det_string)
 
     def add_FixedPsi(self, p, coef=1.0):
         for d in p.determinants:
-            self.add_str_det(d['det_string'], d['coef'] * coef)
+            self.add_str_det(d['det_string'], attempt_int(d['coef'] * coef))
 
     def couple_orbitals(self, o1, o2):
         # generate determinants that represent a singlet bonding coupling between two orbitals.
@@ -64,9 +63,7 @@ class FixedPsi:
     def __repr__(self):
         s = ''
         for d in self.determinants:
-            dc = d['coef']
-            if int(dc)==dc:
-                dc = int(dc)
+            dc = attempt_int(d['coef'])
 
             if dc > 0:
                 if dc == 1.0:
@@ -83,3 +80,17 @@ class FixedPsi:
             s = s[1:]
         return s
 
+
+def generate_dets(Nela, Nelb, Norb):
+    """
+    Generate all possible determinants for a given number of electrons and atomic orbitals.
+    :param Nela: Number of alpha electrons
+    :param Nelb: Number of beta electrons
+    :param Norb: Number of atomic orbitals
+    :return: List of FixedPsi objects, each containing one determinant
+    """
+    L = generate_det_strings(Nela, Nelb, Norb)
+    PP = [None,]*len(L)
+    for i in range(len(L)):
+        PP[i] = FixedPsi(L[i])
+    return PP

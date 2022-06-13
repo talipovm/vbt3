@@ -40,5 +40,11 @@ class TestSlaterDet(unittest.TestCase):
             [['A'], [1]]
         )
 
+    def test_SlaterDet_7(self):
+        self.assertEqual(
+            str(SlaterDet('aBcD')),
+            '|aBcD|'
+        )
+
 if __name__ == '__main__':
     unittest.main()
