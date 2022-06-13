@@ -1,6 +1,7 @@
+import numpy
 import sympy as sp
 
-from vbt3.functions import attempt_int, standardize_det
+from vbt3.functions import attempt_int, standardize_det, sort_ind
 from vbt3.numerical import get_coupled
 from vbt3.slaterdet import SlaterDet
 from vbt3.fixed_psi import FixedPsi
@@ -10,7 +11,7 @@ from vbt3.numerical import get_combined_from_dict
 class Molecule:
     # Perfect-pair expansion of determinants
     def __init__(self, symm_offdiagonal=True, normalized_basis_orbs=True,
-                 interacting_orbs=None, subst=None, zero_ii=True):
+                 interacting_orbs=None, subst=None, zero_ii=True, max_2e_centers = 4):
         """
         subst contains a list of substitutions to be made, eg ['S':('S_ab','S_bc','S_cd'),'H':('H_ab','H_bc')]
         zero_ii=True sets all H_ii terms to zero
@@ -23,17 +24,16 @@ class Molecule:
         self.symm_offdiagonal = symm_offdiagonal
         self.normalized_basis_orbs = normalized_basis_orbs
         self.interacting_orbs = interacting_orbs  # list of two-letter lowercase strings, eg ['ab','bc','ad']
+
+        self.subst = {}
         if subst is None:
             subst = {}
-        else:
-            self.subst = subst
-        self.zero_ii = zero_ii
+        self.parse_subst(subst)
 
-        if subst is not None:
-            self.parse_subst(subst)
+        self.zero_ii = zero_ii
+        self.max_2e_centers = max_2e_centers
 
     def parse_subst(self, subst):
-        self.subst = {}
         for k, v in subst.items():
             if isinstance(v, str):
                 self.subst[v] = k
@@ -320,6 +320,9 @@ class Molecule:
                         s2 = D2s[:k] + D2s[k + 1:m] + D2s[m + 1:]
                         c3, c4 = D2s[k], D2s[m]
 
+                        if len(numpy.unique((c1.lower(),c2.lower(),c3.lower(),c4.lower()))) > self.max_2e_centers:
+                            continue
+
                         sumR = c3.islower() + c4.islower()
                         if sumL != sumR:
                             continue
@@ -334,7 +337,7 @@ class Molecule:
 
                         if c1.islower() == c3.islower():
                             iv = (c1.lower(), c2.lower(), c3.lower(), c4.lower())
-                            indices = '%s%s%s%s' % iv
+                            indices = '%s%s%s%s' % tuple(sort_ind(iv))
                             sign = '(1)' if parity == 0 else '(-1)'
 
                             result[ind] = '%i * %s * T_%s * (%s)' % (2 * off, sign, indices, opS)
@@ -342,7 +345,7 @@ class Molecule:
 
                         if c1.islower() == c4.islower():
                             iv = (c1.lower(), c2.lower(), c4.lower(), c3.lower())
-                            indices = '%s%s%s%s' % iv
+                            indices = '%s%s%s%s' % tuple(sort_ind(iv))
                             sign = '(1)' if parity == 1 else '(-1)'
 
                             result[ind] = '%i * %s * T_%s * (%s)' % (2 * off, sign, indices, opS)

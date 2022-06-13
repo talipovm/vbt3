@@ -128,7 +128,7 @@ class TestMolecule(unittest.TestCase):
         s = m.o2(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
-            '2*T_abab - 2*T_abba'
+            '-2*T_aabb + 2*T_abab'
         )
 
     def test_o2_3(self):
@@ -141,7 +141,7 @@ class TestMolecule(unittest.TestCase):
         s = m.o2(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
-            '6*T_abab*s + 6*T_acad - 6*T_acda + 6*T_bcbd'
+            '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'
         )
 
 

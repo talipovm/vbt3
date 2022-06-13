@@ -1,5 +1,5 @@
 from unittest import TestCase
-from vbt3.functions import generate_det_strings, attempt_int, place_low, place_high, standardize_det
+from vbt3.functions import generate_det_strings, attempt_int, place_low, place_high, standardize_det, sort_ind
 
 
 class TestFixedPsi(TestCase):
@@ -60,4 +60,18 @@ class TestFixedPsi(TestCase):
         self.assertEqual(
             standardize_det('BaCdUUU'),
             ('aBdCUUU', 2)
+        )
+
+    def test_sort_ind_1(self):
+        v = ['a', 'b', 'b', 'a']
+        self.assertEqual(
+            sort_ind(v),
+            ['a','a','b','b']
+        )
+
+    def test_sort_ind_2(self):
+        v = ['d', 'c', 'b', 'a']
+        self.assertEqual(
+            sort_ind(v),
+            ['a','b','c','d']
         )

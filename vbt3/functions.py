@@ -1,6 +1,9 @@
 import string
 from itertools import combinations
 
+from scipy.stats import rankdata
+from vbt3.data import hperm
+
 
 def generate_det_strings(Na, Nb, Norbs):
     """
@@ -128,3 +131,16 @@ def standardize_det(s):
         i += 1
         arr_down += 1
     return new_s, flips
+
+
+def sort_ind(v):
+    z = rankdata(v, method='ordinal')
+    h = {}
+    for i in range(len(z)):
+        h[z[i]] = v[i]
+    z2 = hperm[tuple(z)]
+
+    result = [0, ] * len(z2)
+    for i in range(len(z2)):
+        result[i] = h[z2[i]]
+    return result
