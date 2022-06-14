@@ -7,6 +7,23 @@ from vbt3.fixed_psi import generate_dets
 
 class TestMolecule(unittest.TestCase):
 
+    def test_subst_2e_1(self):
+        m = Molecule(subst_2e={'J':('T_abab', 'T_bcbc')})
+        self.assertEqual(
+            m.subst_2e['T_abab'],
+            'J'
+        )
+
+    def test_subst_2e_2(self):
+        m = Molecule(subst_2e={'J':('1221', ), 'K':('1212',)})
+        d1 = SlaterDet('aB')
+        d2 = SlaterDet('aB')
+        s = m.o2(d1, d2)
+        self.assertEqual(
+            str(sp.simplify(s)),
+            '2*K'
+        )
+
     def test_op_hartree_product_1(self):
         self.assertEqual(
             str(Molecule().Op_Hartree_product('AaBb', 'CcDd')),

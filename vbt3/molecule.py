@@ -1,5 +1,6 @@
 import numpy
 import sympy as sp
+from scipy.stats import rankdata
 
 from vbt3.functions import attempt_int, standardize_det, sort_ind
 from vbt3.numerical import get_coupled
@@ -11,7 +12,8 @@ from vbt3.numerical import get_combined_from_dict
 class Molecule:
     # Perfect-pair expansion of determinants
     def __init__(self, symm_offdiagonal=True, normalized_basis_orbs=True,
-                 interacting_orbs=None, subst=None, zero_ii=True, max_2e_centers = 4):
+                 interacting_orbs=None, subst=None, zero_ii=True,
+                 subst_2e=None, max_2e_centers = 4):
         """
         subst contains a list of substitutions to be made, eg ['S':('S_ab','S_bc','S_cd'),'H':('H_ab','H_bc')]
         zero_ii=True sets all H_ii terms to zero
@@ -26,6 +28,8 @@ class Molecule:
         self.interacting_orbs = interacting_orbs  # list of two-letter lowercase strings, eg ['ab','bc','ad']
 
         self.subst = {}
+        self.subst_2e = {}
+
         self.basis = None
         self.basis_a, self.basis_b = None, None
         self.aH, self.aS = None, None
@@ -36,6 +40,10 @@ class Molecule:
         if subst is None:
             subst = {}
         self.parse_subst(subst)
+
+        if subst_2e is None:
+            subst_2e = {}
+        self.parse_subst_2e(subst_2e)
 
         self.zero_ii = zero_ii
         self.max_2e_centers = max_2e_centers
@@ -73,6 +81,14 @@ class Molecule:
             else:
                 for s in v:
                     self.subst[s] = k
+
+    def parse_subst_2e(self, subst_2e):
+        for k, v in subst_2e.items():
+            if isinstance(v, str):
+                self.subst_2e[v] = k
+            else:
+                for s in v:
+                    self.subst_2e[s] = k
 
     def Op_Hartree_product(self, L_orbs, R_orbs, op='H'):
         # Computes a matrix element for two orbital products, e.g <A(1)b(2)...|O|A(1)b(2)...>.
@@ -359,18 +375,33 @@ class Molecule:
 
                         if c1.islower() == c3.islower():
                             iv = (c1.lower(), c2.lower(), c3.lower(), c4.lower())
-                            indices = '%s%s%s%s' % tuple(sort_ind(iv))
+                            tiv = tuple(sort_ind(iv))
+                            indices = '%s%s%s%s' % tiv
                             sign = '(1)' if parity == 0 else '(-1)'
 
-                            result[ind] = '%i * %s * T_%s * (%s)' % (2 * off, sign, indices, opS)
+                            int_name = 'T_%s' % indices
+                            if self.subst_2e is not None:
+                                r = '%s%s%s%s' % tuple(rankdata(tiv, method='dense'))
+                                if r in self.subst_2e:
+                                    int_name = self.subst_2e[r]
+
+                            result[ind] = '%i * %s * %s * (%s)' % (2 * off, sign, int_name, opS)
                             ind += 1
 
                         if c1.islower() == c4.islower():
                             iv = (c1.lower(), c2.lower(), c4.lower(), c3.lower())
-                            indices = '%s%s%s%s' % tuple(sort_ind(iv))
+                            tiv = tuple(sort_ind(iv))
+
+                            indices = '%s%s%s%s' % tiv
                             sign = '(1)' if parity == 1 else '(-1)'
 
-                            result[ind] = '%i * %s * T_%s * (%s)' % (2 * off, sign, indices, opS)
+                            int_name = 'T_%s' % indices
+                            if self.subst_2e is not None:
+                                r = '%s%s%s%s' % tuple(rankdata(tiv, method='dense'))
+                                if r in self.subst_2e:
+                                    int_name = self.subst_2e[r]
+
+                            result[ind] = '%i * %s * %s * (%s)' % (2 * off, sign, int_name, opS)
                             ind += 1
         return ' + '.join(result[:ind])
 
