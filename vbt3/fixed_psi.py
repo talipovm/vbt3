@@ -27,6 +27,9 @@ class FixedPsi:
         for i, j in coupled_pairs:
             self.couple_orbitals(i, j)
 
+    def __getitem__(self, item):
+        return self.determinants[item]
+
     def contains_det(self, det_string):
         for D in self.determinants:
             if det_string == D['det_string']:

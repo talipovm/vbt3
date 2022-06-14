@@ -1,6 +1,6 @@
 import unittest
 
-from vbt3.fixed_psi import attempt_int
+from vbt3.fixed_psi import attempt_int, FixedPsi
 
 
 class TestMolecule(unittest.TestCase):
@@ -14,4 +14,19 @@ class TestMolecule(unittest.TestCase):
         self.assertEqual(
             str(attempt_int(3.0)),
             '3'
+        )
+
+    def test_get_item_1(self):
+        fp = FixedPsi('abc')
+        self.assertEqual(
+            fp[0]['det_string'],
+            'abc'
+        )
+
+    def test_get_item_2(self):
+        fp = FixedPsi('abc')
+        fp.add_str_det('bcd')
+        self.assertEqual(
+            fp[1]['det_string'],
+            'bcd'
         )
