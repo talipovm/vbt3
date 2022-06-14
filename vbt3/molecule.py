@@ -407,19 +407,19 @@ class Molecule:
 
     def o2_fixed_psi(self, L, R, op='H'):
 
-        if len(L.determinants) == 0:
+        if len(L) == 0:
             return 0
 
-        vo = ['', ] * len(L.determinants)
+        vo = ['', ] * len(L)
         io = 0
-        for dL in L.determinants:
-            vi = ['', ] * len(L.determinants)
+        for dL in L:
+            vi = ['', ] * len(L)
             ii = 0
             for dR in R.determinants:
                 detL = SlaterDet(dL['det_string'])
                 detR = SlaterDet(dR['det_string'])
 
-                elem = self.op_det(detL, detR, op=op)
+                elem = self.o2_det(detL, detR)
 
                 prd = attempt_int(dL['coef'] * dR['coef'])
                 if prd == 1:
@@ -429,11 +429,9 @@ class Molecule:
                 else:
                     prefix = '+(%s)*' % str(prd)
 
-                # s = s + '%s(%s)' % (prefix, elem)
                 vi[ii] = '%s(%s)' % (prefix, elem)
                 ii += 1
 
-            # vo[io] = '(%s)' % str(sp.simplify(''.join(vi[:ii])))
             vo[io] = '(%s)' % ''.join(vi[:ii])
             io += 1
 
@@ -442,4 +440,9 @@ class Molecule:
         if s[0] == '+':
             s = s[1:]
         return s
+
+    def o2(self, L, R, op='H'):
+        L = FixedPsi(L)
+        R = FixedPsi(R)
+        return self.o2_fixed_psi(L, R)
 

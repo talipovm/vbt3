@@ -169,7 +169,7 @@ class TestMolecule(unittest.TestCase):
             '[|aA|+|aC|+2|bB|+|cA|+|cC|, |aB|+|bA|+|bC|+|cB|]'
         )
 
-    def test_o2_1(self):
+    def test_o2_det_1(self):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab', ])
         d1 = SlaterDet('aB')
         d2 = SlaterDet('aB')
@@ -179,7 +179,7 @@ class TestMolecule(unittest.TestCase):
             '2*T_abab'
         )
 
-    def test_o2_2(self):
+    def test_o2_det_2(self):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab', ])
         d1 = SlaterDet('ab')
         d2 = SlaterDet('ab')
@@ -189,7 +189,7 @@ class TestMolecule(unittest.TestCase):
             '-2*T_aabb + 2*T_abab'
         )
 
-    def test_o2_3(self):
+    def test_o2_det_3(self):
         m = Molecule(zero_ii=True,
                      subst={'s': ('S_ab', 'S_bc', 'S_cd'),
                             'h': ('H_ab', 'H_bc', "H_cd")},
@@ -202,6 +202,18 @@ class TestMolecule(unittest.TestCase):
             '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'
         )
 
+    def test_o2_fixed_psi_1(self):
+        m = Molecule(zero_ii=True,
+                     subst={'s': ('S_ab', 'S_bc', 'S_cd'),
+                            'h': ('H_ab', 'H_bc', "H_cd")},
+                     interacting_orbs=['ab', 'bc', 'cd'])
+        fp1 = FixedPsi('aBc')
+        fp2 = FixedPsi('aBd')
+        s = m.o2_fixed_psi(fp1, fp2)
+        self.assertEqual(
+            str(sp.simplify(s)),
+            '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'
+        )
 
 if __name__ == '__main__':
     unittest.main()
