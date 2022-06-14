@@ -232,7 +232,8 @@ class Molecule:
                 vi[ii] = '%s(%s)' % (prefix, elem)
                 ii += 1
 
-            vo[io] = '(%s)' % str(sp.simplify(''.join(vi[:ii])))
+            # vo[io] = '(%s)' % str(sp.simplify(''.join(vi[:ii])))
+            vo[io] = '(%s)' % ''.join(vi[:ii])
             io += 1
 
         s = '+'.join(vo[:io])
@@ -266,12 +267,16 @@ class Molecule:
         :param u: array of FixedPsi, SlaterDet, or str
         :param op: the integration operator
         :return: SymPy matrix with integrals
+
+        Parameters
+        ----------
+        sympify: whether to convert to sympy expression
         """
         N = len(u)
         m = sp.zeros(N)
         for i in range(N):
             for j in range(i, N):
-                m[i, j] = self.Ops(u[i], u[j], op=op)
+                m[i, j] = self.Op(u[i], u[j], op=op)
                 if i != j:
                     m[j, i] = m[i, j]
         return m

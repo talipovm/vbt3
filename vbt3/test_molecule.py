@@ -86,7 +86,7 @@ class TestMolecule(unittest.TestCase):
         m = m.op_det(sd, sd)
         self.assertEqual(
             str(m),
-            '4*h*s*(s - 1)*(s + 1)'
+            '-2*h*s*(2 - 2*s**2)'
         )
 
     def test_op_det_fast_2(self):
@@ -97,7 +97,7 @@ class TestMolecule(unittest.TestCase):
         m = m.op_det(sd, sd, op='S')
         self.assertEqual(
             str(m),
-            '4*(s - 1)**2*(s + 1)**2'
+            '(2 - 2*s**2)**2'
         )
 
     def test_op_det_fast_3(self):
@@ -108,12 +108,10 @@ class TestMolecule(unittest.TestCase):
                      interacting_orbs=['ab', 'bc', 'cd']
                      )
         m.generate_basis(2, 2, 4)
-        m.generate_basis(2, 2, 4)
-        P = generate_dets(2, 2, 4)
-        M2 = m.build_matrix(P, op='S')
+        M2 = m.build_matrix(m.basis, op='S')
         self.assertEqual(
             str(M2[0,1]),
-            '-4*s*(s - 1)*(s + 1)'
+            '2*s*(2 - 2*s**2)'
         )
 
     def test_build_matrix(self):
@@ -125,7 +123,7 @@ class TestMolecule(unittest.TestCase):
         m = m.build_matrix(P, op='S')
         self.assertEqual(
             str(m),
-            'Matrix([[4*(s**2 + 1), 4*s*(s + 1), 4*s*(s + 1)], [4*s*(s + 1), 4*(s**2 + 1), 4*(s**2 + 1)], [4*s*(s + 1), 4*(s**2 + 1), 4*(s**2 + 1)]])'
+            'Matrix([[4*s**2 + 4, 4*s**2 + 4*s, 4*s**2 + 4*s], [4*s**2 + 4*s, 4*s**2 + 4, 4*s**2 + 4], [4*s**2 + 4*s, 4*s**2 + 4, 4*s**2 + 4]])'
         )
 
     def test_normalized_self_energy(self):
