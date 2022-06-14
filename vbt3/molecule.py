@@ -41,6 +41,9 @@ class Molecule:
         self.max_2e_centers = max_2e_centers
 
     def generate_basis(self, Na, Nb, Norbs):
+
+        self.precalculated_half_dets = False
+
         self.basis = generate_dets(Na, Nb, Norbs)
 
         self.basis_a = generate_dets(Na, 0, Norbs)

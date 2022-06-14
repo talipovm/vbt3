@@ -99,6 +99,23 @@ class TestMolecule(unittest.TestCase):
             str(m),
             '4*(s - 1)**2*(s + 1)**2'
         )
+
+    def test_op_det_fast_3(self):
+        m = Molecule(zero_ii=True,
+                     subst={
+                         's': ('S_ab', 'S_bc', 'S_cd'),
+                         'h': ('H_ab', 'H_bc', 'H_cd')},
+                     interacting_orbs=['ab', 'bc', 'cd']
+                     )
+        m.generate_basis(2, 2, 4)
+        m.generate_basis(2, 2, 4)
+        P = generate_dets(2, 2, 4)
+        M2 = m.build_matrix(P, op='S')
+        self.assertEqual(
+            str(M2[0,1]),
+            '-4*s*(s - 1)*(s + 1)'
+        )
+
     def test_build_matrix(self):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab', 'S_ac', 'S_bc'), 'h': ('H_ab', 'H_ac', 'H_bc')})
         P = [0, ] * 3
