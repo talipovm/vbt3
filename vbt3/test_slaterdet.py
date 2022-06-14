@@ -6,7 +6,7 @@ class TestSlaterDet(unittest.TestCase):
     def test_SlaterDet_1(self):
         self.assertEqual(
             SlaterDet('AbCd').spins,
-            '+-+-'
+            '-+-+'
         )
 
     def test_SlaterDet_2(self):
@@ -18,13 +18,13 @@ class TestSlaterDet(unittest.TestCase):
     def test_SlaterDet_3(self):
         self.assertEqual(
             SlaterDet('AbCd').alpha_indices,
-            [0, 2]
+            [1, 3]
         )
 
     def test_SlaterDet_4(self):
         self.assertEqual(
             SlaterDet('AbCd').get_orbital_permutations(),
-            [['AbCd', 'AdCb', 'CbAd', 'CdAb'], [1, -1, -1, 1]]
+            [['AbCd', 'CbAd', 'AdCb', 'CdAb'], [1, -1, -1, 1]]
         )
 
     def test_SlaterDet_5(self):

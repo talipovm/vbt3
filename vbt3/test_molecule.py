@@ -25,6 +25,11 @@ class TestMolecule(unittest.TestCase):
             '(H_ab)'
         )
 
+    def test_op_hartree_product_4(self):
+        self.assertEqual(
+            str(Molecule().Op_Hartree_product('AaBb', 'CcDd', op='S')),
+            '(4 * S_ac*S_ac*S_bd*S_bd)'
+        )
     def test_op_1(self):
         self.assertEqual(
             str(Molecule(zero_ii=False).Ops('AbCd', 'AbCd')),
@@ -73,6 +78,27 @@ class TestMolecule(unittest.TestCase):
             '6*(S_ab**2 + S_bc**2 - 1)*(S_bc**2 + S_cd**2 - 1)'
         )
 
+    def test_op_det_fast_1(self):
+        m = Molecule(zero_ii=True, subst={'s': ('S_ab', 'S_ac', 'S_bc'), 'h': ('H_ab', 'H_ac', 'H_bc')})
+        m.generate_basis(2, 2, 3)
+        s1 = m.basis[0].determinants[0]['det_string']
+        sd = SlaterDet(s1)
+        m = m.op_det(sd, sd)
+        self.assertEqual(
+            str(m),
+            '4*h*s*(s - 1)*(s + 1)'
+        )
+
+    def test_op_det_fast_2(self):
+        m = Molecule(zero_ii=True, subst={'s': ('S_ab', 'S_ac', 'S_bc'), 'h': ('H_ab', 'H_ac', 'H_bc')})
+        m.generate_basis(2, 2, 3)
+        s1 = m.basis[0].determinants[0]['det_string']
+        sd = SlaterDet(s1)
+        m = m.op_det(sd, sd, op='S')
+        self.assertEqual(
+            str(m),
+            '4*(s - 1)**2*(s + 1)**2'
+        )
     def test_build_matrix(self):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab', 'S_ac', 'S_bc'), 'h': ('H_ab', 'H_ac', 'H_bc')})
         P = [0, ] * 3
@@ -112,7 +138,7 @@ class TestMolecule(unittest.TestCase):
         )
 
     def test_o2_1(self):
-        m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab',])
+        m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab', ])
         d1 = SlaterDet('aB')
         d2 = SlaterDet('aB')
         s = m.o2(d1, d2)
@@ -122,7 +148,7 @@ class TestMolecule(unittest.TestCase):
         )
 
     def test_o2_2(self):
-        m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab',])
+        m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab', ])
         d1 = SlaterDet('ab')
         d2 = SlaterDet('ab')
         s = m.o2(d1, d2)
@@ -147,4 +173,5 @@ class TestMolecule(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
 

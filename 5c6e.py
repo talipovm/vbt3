@@ -12,5 +12,4 @@ m = Molecule(zero_ii=True,
 
 P = generate_dets(3,3,5)
 
-res = m.Op(P[0], P[0],op='H')
-print(res)
+res = m.Op(P[0], P[0],op='S')

@@ -4,7 +4,7 @@ import sympy as sp
 from vbt3.functions import attempt_int, standardize_det, sort_ind
 from vbt3.numerical import get_coupled
 from vbt3.slaterdet import SlaterDet
-from vbt3.fixed_psi import FixedPsi
+from vbt3.fixed_psi import FixedPsi, generate_dets
 from vbt3.numerical import get_combined_from_dict
 
 
@@ -26,12 +26,42 @@ class Molecule:
         self.interacting_orbs = interacting_orbs  # list of two-letter lowercase strings, eg ['ab','bc','ad']
 
         self.subst = {}
+        self.basis = None
+        self.basis_a, self.basis_b = None, None
+        self.aH, self.aS = None, None
+        self.bH, self.bS = None, None
+        self.lookup_a, self.lookup_b = {}, {}
+        self.precalculated_half_dets = False
+
         if subst is None:
             subst = {}
         self.parse_subst(subst)
 
         self.zero_ii = zero_ii
         self.max_2e_centers = max_2e_centers
+
+    def generate_basis(self, Na, Nb, Norbs):
+        self.basis = generate_dets(Na, Nb, Norbs)
+
+        self.basis_a = generate_dets(Na, 0, Norbs)
+        for i in range(len(self.basis_a)):
+            self.lookup_a[self.basis_a[i].determinants[0]['det_string']] = i
+
+        if Na == Nb:
+            self.basis_b, self.lookup_b = self.basis_a, self.lookup_a
+        else:
+            self.basis_b = generate_dets(Nb, 0, Norbs) # all lookups will be by lower case
+            for i in range(len(self.basis_b)):
+                self.lookup_b[self.basis_b[i].determinants[0]['det_string']] = i
+
+        self.aH = self.build_matrix(self.basis_a, op='H')
+        self.aS = self.build_matrix(self.basis_a, op='S')
+        if Na == Nb:
+            self.bH, self.bS = self.aH, self.aS
+        else:
+            self.bH = self.build_matrix(self.basis_b, op='H')
+            self.bS = self.build_matrix(self.basis_b, op='S')
+        self.precalculated_half_dets = True
 
     def parse_subst(self, subst):
         for k, v in subst.items():
@@ -108,6 +138,11 @@ class Molecule:
                 else:
                     elem = '*'.join(vp[:vpi])
 
+            if op == 'S':
+                # all Hartree products are the same
+                # just multiply the first HP by the number of rows
+                return '(%s * %s)' % (nL, elem)
+
             if elem != '0':
                 v[vi] = elem
                 vi += 1
@@ -129,6 +164,20 @@ class Molecule:
         if not R.is_compatible(L):
             return 0
 
+        if self.precalculated_half_dets and op in ('H', 'S'):
+            # get indices
+            iLa = self.lookup_a[L.alpha_string]
+            iRa = self.lookup_a[R.alpha_string]
+            iLb = self.lookup_b[L.beta_string.lower()]
+            iRb = self.lookup_b[R.beta_string.lower()]
+
+            if op == 'H':
+                result = (self.aH[iLa, iRa] * self.bS[iLb, iRb] + self.aS[iLa, iRa] * self.bH[iLb, iRb]) / 2
+            else:
+                result = self.aS[iLa, iRa] * self.bS[iLb, iRb]
+            return result
+
+        # Hardcore way
         [R_orbs, R_signs] = R.get_orbital_permutations()
         # sm = ''
         v = ['', ] * len(R_orbs)
@@ -184,41 +233,6 @@ class Molecule:
             io += 1
 
         s = '+'.join(vo[:io])
-        # simple cleanup
-        if s[0] == '+':
-            s = s[1:]
-        return s
-
-    def op_fixed_psi_old(self, L, R, op='H'):
-        s = ''
-
-        if len(L.determinants) == 0:
-            s = '1' if op == 'S' else 0
-            return s
-
-        v = ['', ] * len(L.determinants) * len(R.determinants)
-        i = 0
-        for dL in L.determinants:
-            for dR in R.determinants:
-                detL = SlaterDet(dL['det_string'])
-                detR = SlaterDet(dR['det_string'])
-
-                elem = self.op_det(detL, detR, op=op)
-
-                prd = dL['coef'] * dR['coef']
-
-                if prd == 1:
-                    prefix = '+'
-                elif prd == -1:
-                    prefix = '-'
-                else:
-                    prefix = '+(%f)*' % prd
-
-                # s = s + '%s(%s)' % (prefix, elem)
-                v[i] = '%s(%s)' % (prefix, elem)
-                i += 1
-
-        s = ''.join(v[:i])
         # simple cleanup
         if s[0] == '+':
             s = s[1:]
