@@ -18,7 +18,7 @@ class TestMolecule(unittest.TestCase):
         m = Molecule(subst_2e={'J':('1221', ), 'K':('1212',)})
         d1 = SlaterDet('aB')
         d2 = SlaterDet('aB')
-        s = m.o2(d1, d2)
+        s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
             '2*K'
@@ -173,7 +173,7 @@ class TestMolecule(unittest.TestCase):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab', ])
         d1 = SlaterDet('aB')
         d2 = SlaterDet('aB')
-        s = m.o2(d1, d2)
+        s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
             '2*T_abab'
@@ -183,7 +183,7 @@ class TestMolecule(unittest.TestCase):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab',), 'h': ('H_ab',)}, interacting_orbs=['ab', ])
         d1 = SlaterDet('ab')
         d2 = SlaterDet('ab')
-        s = m.o2(d1, d2)
+        s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
             '-2*T_aabb + 2*T_abab'
@@ -196,7 +196,7 @@ class TestMolecule(unittest.TestCase):
                      interacting_orbs=['ab', 'bc', 'cd'])
         d1 = SlaterDet('aBc')
         d2 = SlaterDet('aBd')
-        s = m.o2(d1, d2)
+        s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
             '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'

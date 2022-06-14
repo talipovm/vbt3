@@ -30,6 +30,9 @@ class FixedPsi:
     def __getitem__(self, item):
         return self.determinants[item]
 
+    def __len__(self):
+        return len(self.determinants)
+
     def contains_det(self, det_string):
         for D in self.determinants:
             if det_string == D['det_string']:

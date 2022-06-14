@@ -30,3 +30,11 @@ class TestMolecule(unittest.TestCase):
             fp[1]['det_string'],
             'bcd'
         )
+
+    def test_len(self):
+        fp = FixedPsi('abc')
+        fp.add_str_det('bcd')
+        self.assertEqual(
+            len(fp),
+            2
+        )

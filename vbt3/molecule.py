@@ -327,7 +327,7 @@ class Molecule:
         couplings = get_coupled(mS=mS, mH=mH, N_tries=N_tries, precision=precision,ranges=ranges)
         return get_combined_from_dict(P, couplings)
 
-    def o2(self, D1, D2):
+    def o2_det(self, D1, D2):
         """
         Computes the two-electron integrals between two determinants
         Parameters
@@ -405,4 +405,41 @@ class Molecule:
                             ind += 1
         return ' + '.join(result[:ind])
 
+    def o2_fixed_psi(self, L, R, op='H'):
+
+        if len(L.determinants) == 0:
+            return 0
+
+        vo = ['', ] * len(L.determinants)
+        io = 0
+        for dL in L.determinants:
+            vi = ['', ] * len(L.determinants)
+            ii = 0
+            for dR in R.determinants:
+                detL = SlaterDet(dL['det_string'])
+                detR = SlaterDet(dR['det_string'])
+
+                elem = self.op_det(detL, detR, op=op)
+
+                prd = attempt_int(dL['coef'] * dR['coef'])
+                if prd == 1:
+                    prefix = '+'
+                elif prd == -1:
+                    prefix = '-'
+                else:
+                    prefix = '+(%s)*' % str(prd)
+
+                # s = s + '%s(%s)' % (prefix, elem)
+                vi[ii] = '%s(%s)' % (prefix, elem)
+                ii += 1
+
+            # vo[io] = '(%s)' % str(sp.simplify(''.join(vi[:ii])))
+            vo[io] = '(%s)' % ''.join(vi[:ii])
+            io += 1
+
+        s = '+'.join(vo[:io])
+        # simple cleanup
+        if s[0] == '+':
+            s = s[1:]
+        return s
 

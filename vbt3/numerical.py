@@ -45,7 +45,7 @@ def repair_connections(coupled, z):
                 fixed = False
                 for nz in coupled[k].keys():
                     if z[k, nz] != 0.0:
-                        if m < nz and z[m,nz] != 0.:
+                        if m < nz and z[m, nz] != 0.:
                             repaired[k][m] = z[k, nz] / z[m, nz]
                             fixed = True
                         elif m > nz and z[nz, m] != 0.:
@@ -137,7 +137,6 @@ def get_coupled(mS, mH, N_tries=10, precision=12, ranges={'h': (-1.0, 0.0), 's':
     # file.close()
 
     return repair_connections(coupled, z)
-
 
 
 def get_combined(P, indices, coefs=None):
