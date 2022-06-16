@@ -38,3 +38,13 @@ class TestMolecule(unittest.TestCase):
             len(fp),
             2
         )
+
+    def test_add_str_1(self):
+        fp2 = FixedPsi('aA')
+        fp2.add_str_det('aB', coef=-1)
+        fp2.add_str_det('bA', coef=-1)
+        fp2.add_str_det('bB')
+        self.assertEqual(
+            str(fp2),
+            '|aA|-|aB|-|bA|+|bB|'
+        )

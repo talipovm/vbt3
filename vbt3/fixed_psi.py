@@ -60,7 +60,7 @@ class FixedPsi:
 
     def add_str_det(self, det_string, coef=+1):
         sd = vbt3.SlaterDet(det_string)
-        self.add_det(sd)
+        self.add_det(sd, coef=coef)
 
     def add_fixedpsi(self, p, coef=1.0):
         for i in range(len(p)):
