@@ -66,3 +66,22 @@ class TestMolecule(unittest.TestCase):
             str(fp + 'bc'),
             '|ab|+|bc|'
         )
+
+    def test_mult_1(self):
+        fp = FixedPsi('ab')
+        fp += 'bc'
+        f2 = fp * 2
+        self.assertEqual(
+            str(f2)
+            , '2|ab|+2|bc|'
+        )
+
+    def test_mult_2(self):
+        fp = FixedPsi('ab')
+        fp += 'bc'
+        f2 = fp * 2
+        f2 *= 3
+        self.assertEqual(
+            str(f2)
+            , '2|ab|+2|bc|'
+        )

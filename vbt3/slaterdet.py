@@ -27,6 +27,9 @@ class SlaterDet:
     def __add__(self, other):
         return vbt3.FixedPsi(self) + other
 
+    def __mul__(self, other):
+        return vbt3.FixedPsi(self) * other
+
     def parse_det(self):
         s = self.det_string
         if len(s) == 0:

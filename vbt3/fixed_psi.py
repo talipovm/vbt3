@@ -36,6 +36,14 @@ class FixedPsi:
         result += other
         return result
 
+    def __mul__(self, other):
+        result = FixedPsi(self)
+        if isinstance(other, int):
+            for i in range(len(result)):
+                result.coefs[i] = attempt_int(result.coefs[i]*other)
+        return result
+
+
     def __getitem__(self, item):
         return self.dets[item]
 
