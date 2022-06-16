@@ -1,7 +1,7 @@
 import vbt3
 from vbt3.functions import generate_det_strings
 from vbt3.functions import attempt_int
-
+import copy
 
 class FixedPsi:
     # Perfect-pair expansion of determinants
@@ -29,6 +29,7 @@ class FixedPsi:
             self.add_det(other)
         elif other.__class__.__name__ == 'FixedPsi':
             self.add_fixedpsi(other)
+        return self
 
     def __add__(self, other):
         result = FixedPsi(self)

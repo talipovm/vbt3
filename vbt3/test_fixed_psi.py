@@ -59,3 +59,10 @@ class TestMolecule(unittest.TestCase):
             s,
             '|aA|: 1;  |bB|: 1;  '
         )
+
+    def test_add_1(self):
+        fp = FixedPsi('ab')
+        self.assertEqual(
+            str(fp + 'bc'),
+            '|ab|+|bc|'
+        )
