@@ -227,16 +227,11 @@ class Molecule:
 
         vo = ['', ] * len(L)
         io = 0
-        for iL in range(len(L)):
-            detL = L.dets[iL]
-            cL = L.coefs[iL]
+        for detL, cL in L:
 
             vi = ['', ] * len(L)
             ii = 0
-            for iR in range(len(R)):
-                detR = R.dets[iR]
-                cR = R.coefs[iR]
-
+            for detR, cR in R:
                 elem = self.op_det(detL, detR, op=op)
 
                 prd = attempt_int(cL * cR)
@@ -250,7 +245,6 @@ class Molecule:
                 vi[ii] = '%s(%s)' % (prefix, elem)
                 ii += 1
 
-            # vo[io] = '(%s)' % str(sp.simplify(''.join(vi[:ii])))
             vo[io] = '(%s)' % ''.join(vi[:ii])
             io += 1
 
@@ -414,15 +408,10 @@ class Molecule:
 
         vo = ['', ] * len(L)
         io = 0
-        for iL in range(len(L)):
-            detL = L.dets[iL]
-            cL = L.coefs[iL]
+        for detL, cL in L:
             vi = ['', ] * len(L)
             ii = 0
-            for iR in range(len(R)):
-                detR = R.dets[iR]
-                cR = R.coefs[iR]
-
+            for detR, cR in R:
                 elem = self.o2_det(detL, detR)
 
                 prd = attempt_int(cL * cR)

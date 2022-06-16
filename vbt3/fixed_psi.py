@@ -16,18 +16,24 @@ class FixedPsi:
 
         if x is None:
             return
-        elif x.__class__.__name__ == 'str':
-            self.add_str_det(x)
-        elif x.__class__.__name__ == 'SlaterDet':
-            self.add_det(x)
-        elif x.__class__.__name__ == 'FixedPsi':
-            self.Nel = x.Nel
-            self.dets = x.dets
-            self.coefs = x.coefs
+        self.__iadd__(x)
 
         if coupled_pairs is not None:
             for i, j in coupled_pairs:
                 self.couple_orbitals(i, j)
+
+    def __iadd__(self, other):
+        if other.__class__.__name__ == 'str':
+            self.add_str_det(other)
+        elif other.__class__.__name__ == 'SlaterDet':
+            self.add_det(other)
+        elif other.__class__.__name__ == 'FixedPsi':
+            self.add_fixedpsi(other)
+
+    def __add__(self, other):
+        result = FixedPsi(self)
+        result += other
+        return result
 
     def __getitem__(self, item):
         return self.dets[item]
@@ -36,16 +42,13 @@ class FixedPsi:
         return len(self.dets)
 
     def __contains__(self, item):
-        for d in self.dets:
+        for d, c in self:
             if d.det_string == item:
                 return True
         return False
 
-    def contains_det(self, det_string):
-        for D in self.dets:
-            if det_string == D['det_string']:
-                return True
-        return False
+    def __iter__(self):
+        return zip(self.dets, self.coefs)
 
     def add_det(self, det, coef=+1):
         assert det.__class__.__name__ == 'SlaterDet'
@@ -63,18 +66,17 @@ class FixedPsi:
         self.add_det(sd, coef=coef)
 
     def add_fixedpsi(self, p, coef=1.0):
-        for i in range(len(p)):
-            self.add_det(p.dets[i], p.coefs[i] * coef)
+        for d, c in p:
+            self.add_det(d, c * coef)
 
     def couple_orbitals(self, o1, o2):
         # generate determinants that represent a singlet bonding coupling between two orbitals.
         # Orbital numbering starts from 0
         determinants = self.dets.copy()
         coefs = self.coefs.copy()
-        for i in range(len(determinants)):
-            ds = determinants[i].det_string
-            coef = coefs[i]
+        for d, coef in zip(determinants, coefs):
             # Flip spins
+            ds = d.det_string
             c1, c2 = [c.lower() if c.isupper() else c.upper() for c in [ds[o1], ds[o2]]]
             assert c1.lower() != c2.lower(), 'Cannot couple the same orbital'
             # Flip positions
@@ -83,9 +85,7 @@ class FixedPsi:
 
     def __repr__(self):
         s = ''
-        for i in range(len(self)):
-            d = self.dets[i]
-            cf = self.coefs[i]
+        for d, cf in self:
             dc = attempt_int(cf)
 
             if dc > 0:

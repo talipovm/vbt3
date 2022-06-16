@@ -48,3 +48,14 @@ class TestMolecule(unittest.TestCase):
             str(fp2),
             '|aA|-|aB|-|bA|+|bB|'
         )
+
+    def test_iter_1(self):
+        fp = FixedPsi('aA')
+        fp.add_str_det('bB')
+        s = ''
+        for d,c in fp:
+            s += '%s: %s;  ' % (d,c)
+        self.assertEqual(
+            s,
+            '|aA|: 1;  |bB|: 1;  '
+        )
