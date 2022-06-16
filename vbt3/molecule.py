@@ -56,14 +56,14 @@ class Molecule:
 
         self.basis_a = generate_dets(Na, 0, Norbs)
         for i in range(len(self.basis_a)):
-            self.lookup_a[self.basis_a[i].determinants[0]['det_string']] = i
+            self.lookup_a[self.basis_a[i].dets[0].det_string] = i
 
         if Na == Nb:
             self.basis_b, self.lookup_b = self.basis_a, self.lookup_a
         else:
             self.basis_b = generate_dets(Nb, 0, Norbs) # all lookups will be by lower case
             for i in range(len(self.basis_b)):
-                self.lookup_b[self.basis_b[i].determinants[0]['det_string']] = i
+                self.lookup_b[self.basis_b[i].dets[0].det_string] = i
 
         self.aH = self.build_matrix(self.basis_a, op='H')
         self.aS = self.build_matrix(self.basis_a, op='S')
@@ -108,11 +108,11 @@ class Molecule:
         lR = R_orbs.lower()
 
         elems = ''
-        v = ['',] * nL
+        v = ['', ] * nL
         vi = 0
         for i_op in range(nL):
             elem = ''
-            vp = ['',] * nL
+            vp = ['', ] * nL
             vpi = 0
             # the product part
             for j in range(nL):
@@ -221,22 +221,25 @@ class Molecule:
     def op_fixed_psi(self, L, R, op='H'):
         s = ''
 
-        if len(L.determinants) == 0:
+        if len(L) == 0:
             s = '1' if op == 'S' else 0
             return s
 
-        vo = ['', ] * len(L.determinants)
+        vo = ['', ] * len(L)
         io = 0
-        for dL in L.determinants:
-            vi = ['', ] * len(L.determinants)
+        for iL in range(len(L)):
+            detL = L.dets[iL]
+            cL = L.coefs[iL]
+
+            vi = ['', ] * len(L)
             ii = 0
-            for dR in R.determinants:
-                detL = SlaterDet(dL['det_string'])
-                detR = SlaterDet(dR['det_string'])
+            for iR in range(len(R)):
+                detR = R.dets[iR]
+                cR = R.coefs[iR]
 
                 elem = self.op_det(detL, detR, op=op)
 
-                prd = attempt_int(dL['coef'] * dR['coef'])
+                prd = attempt_int(cL * cR)
                 if prd == 1:
                     prefix = '+'
                 elif prd == -1:
@@ -244,7 +247,6 @@ class Molecule:
                 else:
                     prefix = '+(%s)*' % str(prd)
 
-                # s = s + '%s(%s)' % (prefix, elem)
                 vi[ii] = '%s(%s)' % (prefix, elem)
                 ii += 1
 
@@ -324,7 +326,7 @@ class Molecule:
             mS = self.build_matrix(P, op='S')
         if mH is None:
             mH = self.build_matrix(P, op='H')
-        couplings = get_coupled(mS=mS, mH=mH, N_tries=N_tries, precision=precision,ranges=ranges)
+        couplings = get_coupled(mS=mS, mH=mH, N_tries=N_tries, precision=precision, ranges=ranges)
         return get_combined_from_dict(P, couplings)
 
     def o2_det(self, D1, D2):
@@ -412,16 +414,18 @@ class Molecule:
 
         vo = ['', ] * len(L)
         io = 0
-        for dL in L:
+        for iL in range(len(L)):
+            detL = L.dets[iL]
+            cL = L.coefs[iL]
             vi = ['', ] * len(L)
             ii = 0
-            for dR in R.determinants:
-                detL = SlaterDet(dL['det_string'])
-                detR = SlaterDet(dR['det_string'])
+            for iR in range(len(R)):
+                detR = R.dets[iR]
+                cR = R.coefs[iR]
 
                 elem = self.o2_det(detL, detR)
 
-                prd = attempt_int(dL['coef'] * dR['coef'])
+                prd = attempt_int(cL * cR)
                 if prd == 1:
                     prefix = '+'
                 elif prd == -1:

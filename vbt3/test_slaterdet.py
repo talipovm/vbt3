@@ -3,6 +3,13 @@ from vbt3 import SlaterDet
 
 
 class TestSlaterDet(unittest.TestCase):
+
+    def test_add_1(self):
+        self.assertEqual(
+            str(SlaterDet('aB') + 'bA'),
+            '|aB|+|bA|'
+        )
+
     def test_SlaterDet_1(self):
         self.assertEqual(
             SlaterDet('AbCd').spins,

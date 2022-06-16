@@ -98,8 +98,7 @@ class TestMolecule(unittest.TestCase):
     def test_op_det_fast_1(self):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab', 'S_ac', 'S_bc'), 'h': ('H_ab', 'H_ac', 'H_bc')})
         m.generate_basis(2, 2, 3)
-        s1 = m.basis[0].determinants[0]['det_string']
-        sd = SlaterDet(s1)
+        sd = m.basis[0].dets[0]
         m = m.op_det(sd, sd)
         self.assertEqual(
             str(m),
@@ -109,8 +108,7 @@ class TestMolecule(unittest.TestCase):
     def test_op_det_fast_2(self):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab', 'S_ac', 'S_bc'), 'h': ('H_ab', 'H_ac', 'H_bc')})
         m.generate_basis(2, 2, 3)
-        s1 = m.basis[0].determinants[0]['det_string']
-        sd = SlaterDet(s1)
+        sd = m.basis[0].dets[0]
         m = m.op_det(sd, sd, op='S')
         self.assertEqual(
             str(m),

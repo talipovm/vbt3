@@ -1,5 +1,5 @@
 from vbt3.orbital_permutations import OrbitalPermutations
-
+import vbt3
 import logging
 
 logging.basicConfig(format=('%(levelname)-8s: %(message)s'))
@@ -23,6 +23,11 @@ class SlaterDet:
     def __repr__(self):
         s = '|%s|' % self.det_string
         return s
+
+    def __add__(self, other):
+        result = vbt3.FixedPsi(self)
+        result.add_str_det(other)
+        return result
 
     def parse_det(self):
         s = self.det_string

@@ -154,7 +154,7 @@ def get_combined(P, indices, coefs=None):
 
     # create a combined FixedPsi
     for i in range(len(indices)):
-        P_contracted.add_FixedPsi(P[indices[i]], coefs[i])
+        P_contracted.add_fixedpsi(P[indices[i]], coefs[i])
     P_new.append(P_contracted)
 
     # copy the remaining FixedPsi
@@ -180,7 +180,7 @@ def get_combined_from_dict(P, d):
     for c in d.values():
         P_contracted = FixedPsi()
         for index, coef in c.items():
-            P_contracted.add_FixedPsi(P[index], coef)
+            P_contracted.add_fixedpsi(P[index], coef)
             c_indices.append(index)
         P_new.append(P_contracted)
 

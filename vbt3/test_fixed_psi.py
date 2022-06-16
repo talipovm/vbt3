@@ -19,7 +19,7 @@ class TestMolecule(unittest.TestCase):
     def test_get_item_1(self):
         fp = FixedPsi('abc')
         self.assertEqual(
-            fp[0]['det_string'],
+            fp[0].det_string,
             'abc'
         )
 
@@ -27,7 +27,7 @@ class TestMolecule(unittest.TestCase):
         fp = FixedPsi('abc')
         fp.add_str_det('bcd')
         self.assertEqual(
-            fp[1]['det_string'],
+            fp[1].det_string,
             'bcd'
         )
 
