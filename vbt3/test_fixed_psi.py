@@ -141,3 +141,19 @@ class TestMolecule(unittest.TestCase):
             str(r),
             '-2|a|'
         )
+
+    def test_add_2(self):
+        c1 = SlaterDet('a') + SlaterDet('a')
+        self.assertEqual(
+            str(c1),
+            '2|a|'
+        )
+
+    def test_sub_1(self):
+        c1 = SlaterDet('a') - SlaterDet('a')
+        self.assertEqual(
+            str(c1),
+            '||'
+        )
+
+

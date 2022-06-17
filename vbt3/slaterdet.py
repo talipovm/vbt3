@@ -29,6 +29,8 @@ class SlaterDet:
         return vbt3.FixedPsi(self) + other
 
     def __sub__(self, other):
+        if self.det_string == other.det_string:
+            return SlaterDet()
         return vbt3.FixedPsi(self) + (-1) * other
 
     def __rsub__(self, other):

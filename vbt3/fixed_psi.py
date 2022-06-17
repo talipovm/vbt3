@@ -97,6 +97,11 @@ class FixedPsi:
         assert det not in self
         assert self.Nel in (0, det.Nel)
 
+        for i in range(len(self)):
+            if det.det_string == self.dets[i].det_string:
+                self.coefs[i] += coef
+                return
+
         self.dets.append(det)
         cf = attempt_int(coef)
         self.coefs.append(cf)
@@ -155,7 +160,7 @@ class FixedPsi:
                 else:
                     s += '%s' % dc
             s += str(d)
-        if s[0] == '+':
+        if len(s) > 0 and s[0] == '+':
             s = s[1:]
         return s
 

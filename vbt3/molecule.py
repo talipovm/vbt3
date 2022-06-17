@@ -229,7 +229,7 @@ class Molecule:
         io = 0
         for detL, cL in L:
 
-            vi = ['', ] * len(L)
+            vi = ['', ] * len(R)
             ii = 0
             for detR, cR in R:
                 elem = self.op_det(detL, detR, op=op)
@@ -406,10 +406,10 @@ class Molecule:
         if len(L) == 0:
             return 0
 
-        vo = ['', ] * len(L)
+        vo = ['', ] * 2 * len(L)
         io = 0
         for detL, cL in L:
-            vi = ['', ] * len(L)
+            vi = ['', ] * 2 * len(R)
             ii = 0
             for detR, cR in R:
                 elem = self.o2_det(detL, detR)

@@ -224,6 +224,49 @@ class TestMolecule(unittest.TestCase):
             'Matrix([[4*J + 4*R, 8*M], [8*M, 4*J + 4*K]])'
         )
 
+    def test_o2_matrix_2(self):
+        m = Molecule(zero_ii=True,
+                     subst={
+                         's': ('S_ab',),
+                         'h': ('H_ab',)},
+                     interacting_orbs=['ab'],
+                     subst_2e={'R': ('1111'), 'K': ('1212'), 'J': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        c1 = SlaterDet('a') + SlaterDet('b')
+        c2 = SlaterDet('A') + SlaterDet('B')
+        c3 = SlaterDet('a') - SlaterDet('b')
+        c4 = SlaterDet('A') - SlaterDet('B')
+        f1 = c1 * c2
+        f2 = c3 * c4
+        P = [f1, f2]
+        z = m.o2_matrix(P)
+        self.assertEqual(
+            str(z),
+            'Matrix([[8*J + 4*K + 16*M + 4*R, -4*K + 4*R], [-4*K + 4*R, 8*J + 4*K - 16*M + 4*R]])'
+        )
+
+    def test_build_matrix_2(self):
+        m = Molecule(zero_ii=True,
+                     subst={
+                         's': ('S_ab',),
+                         'h': ('H_ab',)},
+                     interacting_orbs=['ab'],
+                     subst_2e={'R': ('1111'), 'K': ('1212'), 'J': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        c1 = SlaterDet('a') + SlaterDet('b')
+        c2 = SlaterDet('A') + SlaterDet('B')
+        c3 = SlaterDet('a') - SlaterDet('b')
+        c4 = SlaterDet('A') - SlaterDet('B')
+        f1 = c1 * c2
+        f2 = c3 * c4
+        P = [f1, f2]
+        z = m.build_matrix(P, op='S')
+        self.assertEqual(
+            str(z),
+            'Matrix([[8*s**2 + 16*s + 8, 0], [0, 8*s**2 - 16*s + 8]])'
+        )
+
+
 if __name__ == '__main__':
     unittest.main()
 
