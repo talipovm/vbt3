@@ -1,5 +1,6 @@
 import unittest
 
+from vbt3 import SlaterDet
 from vbt3.fixed_psi import attempt_int, FixedPsi
 
 
@@ -83,5 +84,31 @@ class TestMolecule(unittest.TestCase):
         f2 *= 3
         self.assertEqual(
             str(f2)
-            , '2|ab|+2|bc|'
+            , '6|ab|+6|bc|'
+        )
+
+    def test_mult_3(self):
+        fp = FixedPsi('ab') + SlaterDet('bc')
+        fp *= 3
+        sd = SlaterDet('de')
+        r = fp * sd
+        self.assertEqual(
+            str(r)
+            , '3|abde|+3|bcde|'
+        )
+
+    def test_mult_4(self):
+        fp = FixedPsi('ab') + SlaterDet('bc')
+        fp *= 3
+        r = SlaterDet('de') * fp
+        self.assertEqual(
+            str(r)
+            , '3|deab|+3|debc|'
+        )
+
+    def test_mult_5(self):
+        f1 = SlaterDet('a') + SlaterDet('b')
+        self.assertEqual(
+            str(f1 * f1)
+            , '|aa|+|ab|+|ba|+|bb|'
         )

@@ -10,6 +10,27 @@ class TestSlaterDet(unittest.TestCase):
             '|aB|+|bA|'
         )
 
+    def test_mul_1(self):
+        d = SlaterDet('abc')
+        self.assertEqual(
+            str(d * 2),
+            '2|abc|'
+        )
+
+    def test_mul_2(self):
+        d = SlaterDet('abc')
+        self.assertEqual(
+            str(2 * d),
+            '2|abc|'
+        )
+
+    def test_mul_3(self):
+        d = SlaterDet('abc')
+        self.assertEqual(
+            str(d * SlaterDet('de')),
+            '|abcde|'
+        )
+
     def test_SlaterDet_1(self):
         self.assertEqual(
             SlaterDet('AbCd').spins,

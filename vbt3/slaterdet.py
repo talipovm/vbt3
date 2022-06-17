@@ -28,7 +28,17 @@ class SlaterDet:
         return vbt3.FixedPsi(self) + other
 
     def __mul__(self, other):
-        return vbt3.FixedPsi(self) * other
+        if isinstance(other, int):
+            return vbt3.FixedPsi(self) * other
+        if other.__class__.__name__ == 'SlaterDet':
+            return SlaterDet(self.det_string + other.det_string)
+        if other.__class__.__name__ == 'FixedPsi':
+            return vbt3.FixedPsi(self) * other
+        return NotImplemented
+
+    def __rmul__(self, other):
+        if isinstance(other, int):
+            return vbt3.FixedPsi(self) * other
 
     def parse_det(self):
         s = self.det_string

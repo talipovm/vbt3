@@ -37,12 +37,25 @@ class FixedPsi:
         return result
 
     def __mul__(self, other):
-        result = FixedPsi(self)
         if isinstance(other, int):
+            result = FixedPsi(self)
             for i in range(len(result)):
                 result.coefs[i] = attempt_int(result.coefs[i]*other)
-        return result
+            return result
 
+        if other.__class__.__name__ == 'SlaterDet':
+            result = FixedPsi()
+            for d, c in self:
+                result.add_det(d * other, c)
+            return result
+
+        if other.__class__.__name__ == 'FixedPsi':
+            result = FixedPsi()
+            for dS, cS in self:
+                for dO, cO in other:
+                    result.add_det(dS * dO, cS * cO)
+            return result
+        return NotImplemented
 
     def __getitem__(self, item):
         return self.dets[item]
