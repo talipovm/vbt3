@@ -150,7 +150,7 @@ class FixedPsi:
                 if dc == -1.0:
                     s += '-'
                 else:
-                    s += '-%s' % dc
+                    s += '%s' % dc
             s += str(d)
         if s[0] == '+':
             s = s[1:]

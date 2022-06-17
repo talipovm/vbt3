@@ -134,3 +134,10 @@ class TestMolecule(unittest.TestCase):
             str(f1)
             , '|a|-|b|'
         )
+
+    def test_sub_9(self):
+        r = FixedPsi('a') - 3*FixedPsi('a')
+        self.assertEqual(
+            str(r),
+            '-2|a|'
+        )
