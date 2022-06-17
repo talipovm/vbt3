@@ -50,7 +50,7 @@ class FixedPsi:
         return (-1) * FixedPsi(self)
 
     def __mul__(self, other):
-        if isinstance(other, int):
+        if isinstance(other, int) or isinstance(other, float):
             result = FixedPsi(self)
             for i in range(len(result)):
                 result.coefs[i] = attempt_int(result.coefs[i]*other)
@@ -71,7 +71,7 @@ class FixedPsi:
         return NotImplemented
 
     def __rmul__(self, other):
-        if isinstance(other, int):
+        if isinstance(other, int) or isinstance(other, float):
             result = FixedPsi(self)
             for i in range(len(result)):
                 result.coefs[i] = attempt_int(result.coefs[i]*other)

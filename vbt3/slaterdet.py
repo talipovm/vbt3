@@ -24,6 +24,7 @@ class SlaterDet:
         s = '|%s|' % self.det_string
         return s
 
+    # Description of the magic functions: https://docs.python.org/3/reference/datamodel.html
     def __add__(self, other):
         return vbt3.FixedPsi(self) + other
 
@@ -37,7 +38,7 @@ class SlaterDet:
         return (-1) * vbt3.FixedPsi(self)
 
     def __mul__(self, other):
-        if isinstance(other, int):
+        if isinstance(other, int) or isinstance(other, float):
             return vbt3.FixedPsi(self) * other
         if other.__class__.__name__ == 'SlaterDet':
             return SlaterDet(self.det_string + other.det_string)
@@ -46,7 +47,7 @@ class SlaterDet:
         return NotImplemented
 
     def __rmul__(self, other):
-        if isinstance(other, int):
+        if isinstance(other, int) or isinstance(other, float):
             return vbt3.FixedPsi(self) * other
 
     def parse_det(self):
