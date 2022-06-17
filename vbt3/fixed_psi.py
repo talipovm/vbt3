@@ -46,6 +46,9 @@ class FixedPsi:
         result += other
         return result
 
+    def __neg__(self):
+        return (-1) * FixedPsi(self)
+
     def __mul__(self, other):
         if isinstance(other, int):
             result = FixedPsi(self)
