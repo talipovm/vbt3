@@ -6,4 +6,4 @@ import logging
 
 logging.basicConfig(format='%(levelname)-8s: %(message)s')
 
-__version__ = "1.88"
+__version__ = "1.89"

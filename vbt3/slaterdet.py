@@ -27,6 +27,12 @@ class SlaterDet:
     def __add__(self, other):
         return vbt3.FixedPsi(self) + other
 
+    def __sub__(self, other):
+        return vbt3.FixedPsi(self) + (-1) * other
+
+    def __rsub__(self, other):
+        return vbt3.FixedPsi(other) + (-1) * vbt3.FixedPsi(self)
+
     def __mul__(self, other):
         if isinstance(other, int):
             return vbt3.FixedPsi(self) * other

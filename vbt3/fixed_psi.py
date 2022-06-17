@@ -36,6 +36,16 @@ class FixedPsi:
         result += other
         return result
 
+    def __sub__(self, other):
+        result = FixedPsi(self)
+        result += (-1)*other
+        return result
+
+    def __rsub__(self, other):
+        result = (-1) * FixedPsi(self)
+        result += other
+        return result
+
     def __mul__(self, other):
         if isinstance(other, int):
             result = FixedPsi(self)
@@ -56,6 +66,13 @@ class FixedPsi:
                     result.add_det(dS * dO, cS * cO)
             return result
         return NotImplemented
+
+    def __rmul__(self, other):
+        if isinstance(other, int):
+            result = FixedPsi(self)
+            for i in range(len(result)):
+                result.coefs[i] = attempt_int(result.coefs[i]*other)
+            return result
 
     def __getitem__(self, item):
         return self.dets[item]
@@ -89,6 +106,20 @@ class FixedPsi:
 
     def add_fixedpsi(self, p, coef=1.0):
         for d, c in p:
+            # check if d is aleady in p
+            for i in range(len(self)):
+                if self.dets[i].det_string == d.det_string:
+                    # change the coefficient
+                    self.coefs[i] += c
+                    # if it turns to be 0, shift left the remaining dets
+                    if self.coefs[i] == 0:
+                        for j in range(i, len(self)-1):
+                            self.dets[j] = self.dets[j+1]
+                            self.coefs[j] = self.coefs[j+1]
+                        self.dets = self.dets[:-1]
+                        self.coefs = self.coefs[:-1]
+                    return
+            # det is not in the psi; add it
             self.add_det(d, c * coef)
 
     def couple_orbitals(self, o1, o2):
