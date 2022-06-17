@@ -213,6 +213,17 @@ class TestMolecule(unittest.TestCase):
             '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'
         )
 
+    def test_o2_matrix(self):
+        m = Molecule(subst_2e={'R':('1111'),'K':('1212'), 'J':('1122'), 'M': ('1112', '1121', '1222')})
+        f1 = SlaterDet('aA') + SlaterDet('bB')
+        f2 = SlaterDet('aB') + SlaterDet('bA')
+        u = [f1, f2]
+        r = m.o2_matrix(u)
+        self.assertEqual(
+            str(r),
+            'Matrix([[4*J + 4*R, 8*M], [8*M, 4*J + 4*K]])'
+        )
+
 if __name__ == '__main__':
     unittest.main()
 

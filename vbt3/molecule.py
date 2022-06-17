@@ -439,3 +439,13 @@ class Molecule:
         R = FixedPsi(R)
         return self.o2_fixed_psi(L, R)
 
+    def o2_matrix(self, u):
+        Nd = len(u)
+        o2 = sp.zeros(Nd)
+        for i in range(Nd):
+            for j in range(i, Nd):
+                o2[i, j] = self.o2(u[i], u[j])
+                if i != j:
+                    o2[j, i] = o2[i, j]
+        return o2
+
