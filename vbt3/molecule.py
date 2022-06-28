@@ -90,6 +90,33 @@ class Molecule:
                 for s in v:
                     self.subst_2e[s] = k
 
+    def get_o1_name(self, a, b, o):
+        # sort two orbital indices in the alphabetic order
+        if self.symm_offdiagonal and (a > b):
+            a, b = b, a
+
+        # If only certain orbitals are allowed to interact,
+        # check if the orbital pair is in the allowed list
+        if self.interacting_orbs is not None and (a != b):
+            if not (a + b) in self.interacting_orbs:
+                return '0'  # non-interacting orbitals will always give 0 in any term of the direct product
+
+        # Replace terms S_xx by 1 if allowed
+        if self.normalized_basis_orbs and (a == b) and (o == 'S'):
+            return '1'
+
+        # replace the site energies H_ii by zero if allowed
+        if self.zero_ii and (a == b) and (o == 'H'):
+            return '0'
+
+        s = '%s_%s%s' % (o, a, b)
+
+        # substitute certain AO matrix elements if needed
+        if s in self.subst:
+            s = self.subst[s]
+
+        return s
+
     def Op_Hartree_product(self, L_orbs, R_orbs, op='H'):
         # Computes a matrix element for two orbital products, e.g <A(1)b(2)...|O|A(1)b(2)...>.
         # All product and sum elements are stored separately and are usable for producing Latex or Sympy output
@@ -107,11 +134,9 @@ class Molecule:
         lL = L_orbs.lower()
         lR = R_orbs.lower()
 
-        elems = ''
         v = ['', ] * nL
         vi = 0
         for i_op in range(nL):
-            elem = ''
             vp = ['', ] * nL
             vpi = 0
             # the product part
@@ -119,37 +144,15 @@ class Molecule:
                 o = op if i_op == j else 'S'
                 a, b = lL[j], lR[j]
 
-                # sort two orbital indices in the alphabetic order
-                if self.symm_offdiagonal and (a > b):
-                    a, b = lR[j], lL[j]
-
-                # If only certain orbitals are allowed to interact,
-                # check if the orbital pair is in the allowed list
-                if self.interacting_orbs is not None and (a != b):
-                    if not (a + b) in self.interacting_orbs:
-                        return '0'  # non-interacting orbitals will always give 0 in any term of the direct product
-
-                # Replace terms S_xx by 1 if allowed
-                if self.normalized_basis_orbs and (o == 'S') and (a == b):
-                    s = '1'
-                else:
-                    s = '%s_%s%s' % (o, a, b)
-
-                # replace the site energies H_ii by zero if allowed
-                if self.zero_ii and (a == b) and (o == 'H'):
-                    vp = ['0']
-                    vpi += 1
-                    break
-
-                # substitute certain AO matrix elements if needed
-                if s in self.subst:
-                    s = self.subst[s]
+                s = self.get_o1_name(a, b, o)
 
                 if s != '1':
                     vp[vpi] = s
                     vpi += 1
+                if s == '0':
+                    break
 
-            if vpi == 0: # all 1
+            if vpi == 0:  # all 1s
                 elem = '1'
             else:
                 if '0' in vp:
@@ -392,34 +395,18 @@ class Molecule:
 
                         if c1.islower() == c3.islower():
                             iv = (c1.lower(), c2.lower(), c3.lower(), c4.lower())
-                            tiv = tuple(sort_ind(iv))
-                            indices = '%s%s%s%s' % tiv
+                            int_name = self.get_o2_name(iv)
                             sign = '(1)' if parity == 0 else '(-1)'
-
-                            int_name = 'T_%s' % indices
-                            if self.subst_2e is not None:
-                                r = '%s%s%s%s' % tuple(rankdata(tiv, method='dense'))
-                                if r in self.subst_2e:
-                                    int_name = self.subst_2e[r]
-
                             result[ind] = '%i * %s * %s * (%s)' % (2 * off, sign, int_name, opS)
                             ind += 1
 
                         if c1.islower() == c4.islower():
                             iv = (c1.lower(), c2.lower(), c4.lower(), c3.lower())
-                            tiv = tuple(sort_ind(iv))
-
-                            indices = '%s%s%s%s' % tiv
+                            int_name = self.get_o2_name(iv)
                             sign = '(1)' if parity == 1 else '(-1)'
-
-                            int_name = 'T_%s' % indices
-                            if self.subst_2e is not None:
-                                r = '%s%s%s%s' % tuple(rankdata(tiv, method='dense'))
-                                if r in self.subst_2e:
-                                    int_name = self.subst_2e[r]
-
                             result[ind] = '%i * %s * %s * (%s)' % (2 * off, sign, int_name, opS)
                             ind += 1
+
         return ' + '.join(result[:ind])
 
     def o2_fixed_psi(self, L, R, op='H'):
