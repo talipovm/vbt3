@@ -323,6 +323,27 @@ class Molecule:
         couplings = get_coupled(mS=mS, mH=mH, N_tries=N_tries, precision=precision, ranges=ranges)
         return get_combined_from_dict(P, couplings)
 
+    def get_o2_name(self, v):
+        """
+        Gets the standardized name of the 2e integral. Uses integral symmetries to sort indices.
+        Substitutes the integral by name if provided
+        Parameters
+        ----------
+        v: list of one-letter lower-case orbital names
+
+        Returns
+        -------
+        string with the integral name
+        """
+        tiv = tuple(sort_ind(v))
+        indices = '%s%s%s%s' % tiv
+        int_name = 'T_%s' % indices
+        if self.subst_2e is not None:
+            r = '%s%s%s%s' % tuple(rankdata(tiv, method='dense'))
+            if r in self.subst_2e:
+                int_name = self.subst_2e[r]
+        return int_name
+
     def o2_det(self, D1, D2):
         """
         Computes the two-electron integrals between two determinants
