@@ -45,7 +45,7 @@ class TestMolecule(unittest.TestCase):
     def test_op_hartree_product_4(self):
         self.assertEqual(
             str(Molecule().Op_Hartree_product('AaBb', 'CcDd', op='S')),
-            '(4 * S_ac*S_ac*S_bd*S_bd)'
+            '(S_ac*S_ac*S_bd*S_bd)'
         )
 
     def test_op_1(self):
@@ -93,7 +93,7 @@ class TestMolecule(unittest.TestCase):
     def test_op_8(self):
         self.assertEqual(
             str(Molecule(zero_ii=False, interacting_orbs=['ab', 'bc', 'cd']).Ops('ABbCcd', 'ABbCcd', op='S')),
-            '6*(S_ab**2 + S_bc**2 - 1)*(S_bc**2 + S_cd**2 - 1)'
+            '(S_ab**2 + S_bc**2 - 1)*(S_bc**2 + S_cd**2 - 1)'
         )
 
     def test_op_det_fast_1(self):
@@ -103,7 +103,7 @@ class TestMolecule(unittest.TestCase):
         m = m.op_det(sd, sd)
         self.assertEqual(
             str(m),
-            '-2*h*s*(2 - 2*s**2)'
+            '-2*h*s*(1 - s**2)'
         )
 
     def test_op_det_fast_2(self):
@@ -113,7 +113,7 @@ class TestMolecule(unittest.TestCase):
         m = m.op_det(sd, sd, op='S')
         self.assertEqual(
             str(m),
-            '(2 - 2*s**2)**2'
+            '(1 - s**2)**2'
         )
 
     def test_op_det_fast_3(self):
@@ -127,7 +127,7 @@ class TestMolecule(unittest.TestCase):
         M2 = m.build_matrix(m.basis, op='S')
         self.assertEqual(
             str(M2[0, 1]),
-            '2*s*(2 - 2*s**2)'
+            's*(1 - s**2)'
         )
 
     def test_build_matrix(self):
@@ -135,11 +135,11 @@ class TestMolecule(unittest.TestCase):
         P = [0, ] * 3
         P[0] = FixedPsi('Ab', coupled_pairs=[(0, 1)])
         P[1] = FixedPsi('Bc', coupled_pairs=[(0, 1)])
-        P[2] = FixedPsi('Bc', coupled_pairs=[(0, 1)])
+        P[2] = FixedPsi('Ac', coupled_pairs=[(0, 1)])
         m = m.build_matrix(P, op='S')
         self.assertEqual(
             str(m),
-            'Matrix([[4*s**2 + 4, 4*s**2 + 4*s, 4*s**2 + 4*s], [4*s**2 + 4*s, 4*s**2 + 4, 4*s**2 + 4], [4*s**2 + 4*s, 4*s**2 + 4, 4*s**2 + 4]])'
+            'Matrix([[2*s**2 + 2, 2*s**2 + 2*s, 2*s**2 + 2*s], [2*s**2 + 2*s, 2*s**2 + 2, 2*s**2 + 2*s], [2*s**2 + 2*s, 2*s**2 + 2*s, 2*s**2 + 2]])'
         )
 
     def test_normalized_self_energy(self):
@@ -147,7 +147,7 @@ class TestMolecule(unittest.TestCase):
         P = FixedPsi('AB')
         self.assertEqual(
             str(m.energy(P)),
-            '-(2*H_aa - 4*H_ab*S_ab + 2*H_bb)/(2*(S_ab - 1)*(S_ab + 1))'
+            '-(H_aa - 2*H_ab*S_ab + H_bb)/((S_ab - 1)*(S_ab + 1))'
         )
 
     def test_couple(self):
@@ -264,7 +264,7 @@ class TestMolecule(unittest.TestCase):
         z = m.build_matrix(P, op='S')
         self.assertEqual(
             str(z),
-            'Matrix([[8*s**2 + 16*s + 8, 0], [0, 8*s**2 - 16*s + 8]])'
+            'Matrix([[4*s**2 + 8*s + 4, 0], [0, 4*s**2 - 8*s + 4]])'
         )
 
 

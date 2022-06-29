@@ -163,7 +163,7 @@ class Molecule:
             if op == 'S':
                 # all Hartree products are the same
                 # just multiply the first HP by the number of rows
-                return '(%s * %s)' % (nL, elem)
+                return '(%s)' % (elem)
 
             if elem != '0':
                 v[vi] = elem
@@ -304,11 +304,7 @@ class Molecule:
         """
         E = self.Ops(P, P, op='H')
         S = self.Ops(P, P, op='S')
-        if P.__class__.__name__ == 'str':
-            Nel = len(P)
-        else:
-            Nel = P.Nel
-        return Nel * E / S
+        return E / S
 
     def couple(self, P=None, mS=None, mH=None, N_tries=10, precision=12, ranges={'h':(-1.0,0.0),'s':(0.0,1.0)}):
         """
