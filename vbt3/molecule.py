@@ -403,7 +403,10 @@ class Molecule:
                             result[ind] = '%i * %s * %s * (%s)' % (2 * off, sign, int_name, opS)
                             ind += 1
 
-        return ' + '.join(result[:ind])
+        if ind==0:
+            return '0'
+        else:
+            return ' + '.join(result[:ind])
 
     def o2_fixed_psi(self, L, R, op='H'):
 

@@ -201,6 +201,24 @@ class TestMolecule(unittest.TestCase):
             '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'
         )
 
+    def test_o2_det_4(self):
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab', 'bc', 'ac'],
+                     subst={'h': ['H_aa', 'H_bb', 'H_cc'],
+                            'H_ab': ['H_ab', 'H_bc', 'H_ac'],
+                            's': ['S_ab', 'S_bc', 'S_ac']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')},
+                     max_2e_centers=2,
+                     )
+        P = generate_dets(1, 1, 3)
+        #z = m.op_fixed_psi(P[0], P[5])
+        o2 = m.o2_matrix(P)
+
+        self.assertEqual(
+            str(o2[0,0]  ),
+            '2*R'
+        )
+
     def test_o2_fixed_psi_1(self):
         m = Molecule(zero_ii=True,
                      subst={'s': ('S_ab', 'S_bc', 'S_cd'),
@@ -301,12 +319,11 @@ class TestMolecule(unittest.TestCase):
                      subst={'h': ['H_aa', 'H_bb']},
                      subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
                      )
-        rs = sp.simplify(m.get_mo_norm([c1,]))
+        rs = sp.simplify(m.get_mo_norm([c1, ]))
         self.assertEqual(
             str(rs),
             'Matrix([[sqrt(2)/(2*sqrt(S_ab + 1))]])'
         )
-
 
     def test_get_fock_1(self):
         c1 = SlaterDet('a') + SlaterDet('b')
@@ -318,7 +335,7 @@ class TestMolecule(unittest.TestCase):
                      subst={'h': ['H_aa', 'H_bb']},
                      subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
                      )
-        rs = sp.simplify(m.get_fock([c1,C1, c3, C3], Nel=2))
+        rs = sp.simplify(m.get_fock([c1, C1, c3, C3], Nel=2))
         self.assertEqual(
             str(rs),
             'Matrix([[(J + 2*K + 4*M + R)/(2*(S_ab + 1)**2), 0, 0, 0], [0, (J + 2*K + 4*M + R)/(2*(S_ab + 1)**2), 0, 0], [0, 0, (-3*J + 4*K - R)/(2*(S_ab**2 - 1)), 0], [0, 0, 0, (-3*J + 4*K - R)/(2*(S_ab**2 - 1))]])'
@@ -332,7 +349,7 @@ class TestMolecule(unittest.TestCase):
                      subst={'h': ['H_aa', 'H_bb']},
                      subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
                      )
-        rs = sp.simplify(m.get_rhf_fock([c1, c3,], Nel=2))
+        rs = sp.simplify(m.get_rhf_fock([c1, c3, ], Nel=2))
         self.assertEqual(
             str(rs),
             'Matrix([[(J + 2*K + 4*M + R)/(2*(S_ab + 1)**2), 0], [0, (-3*J + 4*K - R)/(2*(S_ab**2 - 1))]])'
