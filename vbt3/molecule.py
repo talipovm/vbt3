@@ -453,3 +453,61 @@ class Molecule:
                     o2[j, i] = o2[i, j]
         return o2
 
+    def o2_mo2ao(self, c1, c2, c3, c4):
+        s = '0'
+        for i1, k1 in c1:
+            for i2, k2 in c2:
+                for i3, k3 in c3:
+                    for i4, k4 in c4:
+                        if i1.det_string.isupper() != i3.det_string.isupper():
+                            continue
+                        if i2.det_string.isupper() != i4.det_string.isupper():
+                            continue
+                        s += ' + ' + str(k1 * k2 * k3 * k4) + '*' + self.get_o2_name((i1.det_string.lower(),
+                                                                                      i2.det_string.lower(),
+                                                                                      i3.det_string.lower(),
+                                                                                      i4.det_string.lower()))
+        return s
+
+    def get_mo_norm(self, mo):
+        # returns a diagonal matrix with the normalization factors on the diagonal
+        mo_norm = sp.zeros(len(mo))
+        for i in range(len(mo)):
+            mo_norm[i, i] = 1 / sp.sqrt(self.Ops(mo[i], mo[i], op='S'))
+        return mo_norm
+
+    def get_fock(self, mo, Nel):
+        # example of mo: [|a|+|b|, |A|+|B|, |a|-|b|, |A|-|B|]
+        # Construct the Fock matrix
+        Nmo = len(mo)
+        fock = sp.zeros(Nmo)
+        mo_norm = self.get_mo_norm(mo)
+        for i in range(Nmo):
+            for j in range(Nmo):
+                for b in range(Nel):
+                    norm = mo_norm[i,i] * mo_norm[j,j] * mo_norm[b,b]**2
+
+                    fock[i,j] += sp.simplify(self.o2_mo2ao(mo[i],mo[b],mo[j],mo[b])) * norm
+                    fock[i,j] -= sp.simplify(self.o2_mo2ao(mo[i],mo[b],mo[b],mo[j])) * norm
+
+                fock[i,j] = sp.simplify(fock[i,j])
+
+        return fock
+
+    def get_rhf_fock(self, mo, Nel):
+        # example of mo: [|a|+|b|, |A|+|B|, |a|-|b|, |A|-|B|]
+        # Construct the Fock matrix
+        Nmo = len(mo)
+        fock = sp.zeros(Nmo)
+        mo_norm = self.get_mo_norm(mo)
+        for mu in range(Nmo):
+            for nu in range(Nmo):
+                for a in range(Nel // 2):
+                    norm = mo_norm[mu, mu] * mo_norm[nu, nu] * mo_norm[a, a]**2
+
+                    fock[mu, nu] += sp.simplify(self.o2_mo2ao(mo[mu], mo[a], mo[nu], mo[a])) * 2 * norm
+                    fock[mu, nu] -= sp.simplify(self.o2_mo2ao(mo[mu], mo[a], mo[a], mo[nu])) * norm
+
+                fock[mu, nu] = sp.simplify(fock[mu, nu])
+
+        return fock

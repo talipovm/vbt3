@@ -267,7 +267,6 @@ class TestMolecule(unittest.TestCase):
             'Matrix([[4*s**2 + 8*s + 4, 0], [0, 4*s**2 - 8*s + 4]])'
         )
 
-
     def test_get_o2_name_1(self):
         m = Molecule(zero_ii=True,
                      subst={
@@ -276,11 +275,70 @@ class TestMolecule(unittest.TestCase):
                      interacting_orbs=['ab'],
                      subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
                      )
-        v = ['a','b','a','b'] # <ab|ab>
+        v = ['a', 'b', 'a', 'b']  # <ab|ab>
         self.assertEqual(
             m.get_o2_name(v),
             'J'
         )
+
+    def test_o2_mo2ao_1(self):
+        c1 = SlaterDet('a') + SlaterDet('b')
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'h': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        rs = sp.simplify(m.o2_mo2ao(c1, c1, c1, c1))
+        self.assertEqual(
+            str(rs),
+            '2*J + 4*K + 8*M + 2*R'
+        )
+
+    def test_get_mo_norm_1(self):
+        c1 = SlaterDet('a') + SlaterDet('b')
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'h': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        rs = sp.simplify(m.get_mo_norm([c1,]))
+        self.assertEqual(
+            str(rs),
+            'Matrix([[sqrt(2)/(2*sqrt(S_ab + 1))]])'
+        )
+
+
+    def test_get_fock_1(self):
+        c1 = SlaterDet('a') + SlaterDet('b')
+        C1 = SlaterDet('A') + SlaterDet('B')
+        c3 = SlaterDet('a') - SlaterDet('b')
+        C3 = SlaterDet('A') - SlaterDet('B')
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'h': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        rs = sp.simplify(m.get_fock([c1,C1, c3, C3], Nel=2))
+        self.assertEqual(
+            str(rs),
+            'Matrix([[(J + 2*K + 4*M + R)/(2*(S_ab + 1)**2), 0, 0, 0], [0, (J + 2*K + 4*M + R)/(2*(S_ab + 1)**2), 0, 0], [0, 0, (-3*J + 4*K - R)/(2*(S_ab**2 - 1)), 0], [0, 0, 0, (-3*J + 4*K - R)/(2*(S_ab**2 - 1))]])'
+        )
+
+    def test_get_rhf_fock_1(self):
+        c1 = SlaterDet('a') + SlaterDet('b')
+        c3 = SlaterDet('a') - SlaterDet('b')
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'h': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        rs = sp.simplify(m.get_rhf_fock([c1, c3,], Nel=2))
+        self.assertEqual(
+            str(rs),
+            'Matrix([[(J + 2*K + 4*M + R)/(2*(S_ab + 1)**2), 0], [0, (-3*J + 4*K - R)/(2*(S_ab**2 - 1))]])'
+        )
+
 if __name__ == '__main__':
     unittest.main()
+
 

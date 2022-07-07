@@ -2,6 +2,7 @@ import string
 from itertools import combinations
 
 from scipy.stats import rankdata
+import sympy
 from vbt3.data import hperm
 
 
@@ -145,3 +146,15 @@ def sort_ind(v):
     for i in range(len(z2)):
         result[i] = h[z2[i]]
     return result
+
+
+def simplify_matrix(mtx, factor=False):
+    result = sympy.zeros(mtx.shape[0])
+    for i in range(mtx.shape[0]):
+        for j in range(mtx.shape[0]):
+            if factor:
+                result[i, j] = sympy.factor(mtx[i, j])
+            else:
+                result[i, j] = sympy.simplify(mtx[i, j])
+    return result
+

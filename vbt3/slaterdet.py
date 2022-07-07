@@ -97,10 +97,10 @@ class SlaterDet:
 
     def is_compatible(self, R):
         if self.Nel != R.Nel:
-            logging.warning('Different number of electrons: %i vs %i' % (self.Nel, R.Nel))
+            # logging.warning('Different number of electrons: %i vs %i' % (self.Nel, R.Nel))
             return (False)
         if self.spins != R.spins:
-            logging.warning('The determinant spins are incompatible: %s vs %s' % (self.spins, R.spins))
+            # logging.warning('The determinant spins are incompatible: %s vs %s' % (self.spins, R.spins))
             return (False)
         return (True)
 
