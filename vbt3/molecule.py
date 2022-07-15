@@ -2,7 +2,7 @@ import numpy
 import sympy as sp
 from scipy.stats import rankdata
 
-from vbt3.functions import attempt_int, standardize_det, sort_ind
+from vbt3.functions import attempt_int, standardize_det, sort_ind, simplify_matrix
 from vbt3.numerical import get_coupled
 from vbt3.slaterdet import SlaterDet
 from vbt3.fixed_psi import FixedPsi, generate_dets
@@ -334,9 +334,12 @@ class Molecule:
         -------
         string with the integral name
         """
+        if len(numpy.unique((v[0].lower(), v[1].lower(), v[2].lower(), v[3].lower()))) > self.max_2e_centers:
+            return '0'
         tiv = tuple(sort_ind(v))
         indices = '%s%s%s%s' % tiv
         int_name = 'T_%s' % indices
+
         if self.subst_2e is not None:
             r = '%s%s%s%s' % tuple(rankdata(tiv, method='dense'))
             if r in self.subst_2e:
@@ -514,3 +517,11 @@ class Molecule:
                 fock[mu, nu] = sp.simplify(fock[mu, nu])
 
         return fock
+
+    def get_rhf_mo_energies(self, mo_rhf, Nel):
+        mo_rhf_norm = self.get_mo_norm(mo_rhf)
+        rhf_o1 = simplify_matrix(mo_rhf_norm * self.build_matrix(mo_rhf, op='H') * mo_rhf_norm)
+        rhf_fock = self.get_rhf_fock(mo_rhf, Nel=Nel)
+        return (rhf_o1 + rhf_fock).diagonal()
+
+

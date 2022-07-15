@@ -211,11 +211,11 @@ class TestMolecule(unittest.TestCase):
                      max_2e_centers=2,
                      )
         P = generate_dets(1, 1, 3)
-        #z = m.op_fixed_psi(P[0], P[5])
+        # z = m.op_fixed_psi(P[0], P[5])
         o2 = m.o2_matrix(P)
 
         self.assertEqual(
-            str(o2[0,0]  ),
+            str(o2[0, 0]),
             '2*R'
         )
 
@@ -354,6 +354,59 @@ class TestMolecule(unittest.TestCase):
             str(rs),
             'Matrix([[(J + 2*K + 4*M + R)/(2*(S_ab + 1)**2), 0], [0, (-3*J + 4*K - R)/(2*(S_ab**2 - 1))]])'
         )
+
+    def test_get_rhf_mo_energies_1(self):
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'h': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        #  K, J confirmed
+        nums = {'R': 0.77460594, 'M': 0.30930897, 'K': 0.15786578, 'J': 0.47804137,
+                'h': -0.97949638, 'H_aa': -0.97949638, 'H_bb': -0.97949638, 'H_ab': -0.68286493,
+                'S_ab': 0.49648469, 's': 0.49648469}
+
+        c1 = SlaterDet('a') + SlaterDet('b')
+        c3 = SlaterDet('a') - SlaterDet('b')
+        z = m.get_rhf_mo_energies([c1, c3], Nel = 2)
+
+        self.assertEqual(
+            str(z.subs(nums)),
+            'Matrix([[-0.484441678333514, 0.457501911989868]])'
+        )
+
+    def test_get_rhf_mo_energies_2(self):
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab', 'bc', 'ac'],
+                     subst={'E_0': ['H_aa', 'H_bb', 'H_cc'],
+                            'h': ['H_ab', 'H_bc', 'H_ac'],
+                            's': ['S_ab', 'S_bc', 'S_ac']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222'),
+                               'T_1': ('1213', '1323', '1232'),
+                               'T_2': ('1123', '1132', '1223', '1233')},
+                     max_2e_centers=3,
+                     )
+        #  K, J confirmed
+        nums = {'R': 0.77460594, 'M': 0.30930897, 'K': 0.15786578, 'J': 0.47804137,
+                'E_0': -1.4924109, 'H_aa': -1.4924109, 'H_bb': -1.4924109,
+                'h': -0.95694583, 'H_ab': -0.95694583,
+                'T_1': 0.2484902,
+                'T_2': 0.14232937,
+                'S_ab': 0.49648469, 's': 0.49648469}
+
+        mo0_a = SlaterDet('a') + SlaterDet('b') + SlaterDet('c')
+        mo1_a = -SlaterDet('a') + SlaterDet('c')
+        mo2_a = SlaterDet('a') - SlaterDet('b') - SlaterDet('b') + SlaterDet('c')
+        # mo2_a = SlaterDet('a') - 2 * SlaterDet('b') + SlaterDet('c') # does not work
+
+        mos = [mo0_a, mo1_a, mo2_a]
+        z = m.get_rhf_mo_energies(mos, Nel = 2)
+
+        self.assertEqual(
+            str(z.subs(nums)),
+            'Matrix([[-1.12428643604810, -0.0696699523024116, -0.0696699523024116]])'
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
