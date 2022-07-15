@@ -296,7 +296,7 @@ class Molecule:
                     m[j, i] = m[i, j]
         return m
 
-    def energy(self, P):
+    def energy(self, P, o2=False):
         """
         Find the energy for the FixedPsi object: E = <P|H|P> / <P|P>
         :param P: A wavefunction: FixedPsi, SlaterDet, or str
@@ -304,7 +304,10 @@ class Molecule:
         """
         E = self.Ops(P, P, op='H')
         S = self.Ops(P, P, op='S')
-        return E / S
+        if o2:
+            return (E / S) + sp.simplify(sp.simplify(self.o2_fixed_psi(P, P)) / (S * 2))
+        else:
+            return E / S
 
     def couple(self, P=None, mS=None, mH=None, N_tries=10, precision=12, ranges={'h':(-1.0,0.0),'s':(0.0,1.0)}):
         """

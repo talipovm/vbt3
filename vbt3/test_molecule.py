@@ -219,6 +219,33 @@ class TestMolecule(unittest.TestCase):
             '2*R'
         )
 
+    def test_energy_1(self):
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'h': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        c1 = SlaterDet('a') + SlaterDet('b')
+        C1 = SlaterDet('A') + SlaterDet('B')
+        self.assertEqual(
+            str(m.energy(c1*C1)),
+            '2*(H_ab + h)/(S_ab + 1)'
+        )
+
+
+    def test_energy_2(self):
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'h': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')}
+                     )
+        c1 = SlaterDet('a') + SlaterDet('b')
+        C1 = SlaterDet('A') + SlaterDet('B')
+        self.assertEqual(
+            str(m.energy(c1*C1, o2=True)),
+            '2*(H_ab + h)/(S_ab + 1) + (J + 2*K + 4*M + R)/(2*(S_ab + 1)**2)'
+
+        )
     def test_o2_fixed_psi_1(self):
         m = Molecule(zero_ii=True,
                      subst={'s': ('S_ab', 'S_bc', 'S_cd'),
