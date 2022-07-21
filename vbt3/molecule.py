@@ -305,7 +305,7 @@ class Molecule:
         E = self.Ops(P, P, op='H')
         S = self.Ops(P, P, op='S')
         if o2:
-            return (E / S) + sp.simplify(sp.simplify(self.o2_fixed_psi(P, P)) / (S * 2))
+            return (E / S) + sp.simplify(sp.simplify(self.o2_fixed_psi(P, P)) / S)
         else:
             return E / S
 
@@ -399,14 +399,14 @@ class Molecule:
                             iv = (c1.lower(), c2.lower(), c3.lower(), c4.lower())
                             int_name = self.get_o2_name(iv)
                             sign = '(1)' if parity == 0 else '(-1)'
-                            result[ind] = '%i * %s * %s * (%s)' % (2 * off, sign, int_name, opS)
+                            result[ind] = '%s * %s * (%s)' % (sign, int_name, opS)
                             ind += 1
 
                         if c1.islower() == c4.islower():
                             iv = (c1.lower(), c2.lower(), c4.lower(), c3.lower())
                             int_name = self.get_o2_name(iv)
                             sign = '(1)' if parity == 1 else '(-1)'
-                            result[ind] = '%i * %s * %s * (%s)' % (2 * off, sign, int_name, opS)
+                            result[ind] = '%s * %s * (%s)' % (sign, int_name, opS)
                             ind += 1
 
         if ind==0:

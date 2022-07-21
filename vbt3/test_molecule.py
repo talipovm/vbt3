@@ -21,7 +21,7 @@ class TestMolecule(unittest.TestCase):
         s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
-            '2*K'
+            'K'
         )
 
     def test_op_hartree_product_1(self):
@@ -175,7 +175,7 @@ class TestMolecule(unittest.TestCase):
         s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
-            '2*T_abab'
+            'T_abab'
         )
 
     def test_o2_det_2(self):
@@ -185,7 +185,7 @@ class TestMolecule(unittest.TestCase):
         s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
-            '-2*T_aabb + 2*T_abab'
+            '-T_aabb + T_abab'
         )
 
     def test_o2_det_3(self):
@@ -198,7 +198,7 @@ class TestMolecule(unittest.TestCase):
         s = m.o2_det(d1, d2)
         self.assertEqual(
             str(sp.simplify(s)),
-            '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'
+            '-T_aadc + T_abab*s + T_acad + T_bcbd'
         )
 
     def test_o2_det_4(self):
@@ -216,7 +216,7 @@ class TestMolecule(unittest.TestCase):
 
         self.assertEqual(
             str(o2[0, 0]),
-            '2*R'
+            'R'
         )
 
     def test_energy_1(self):
@@ -256,7 +256,7 @@ class TestMolecule(unittest.TestCase):
         s = m.o2_fixed_psi(fp1, fp2)
         self.assertEqual(
             str(sp.simplify(s)),
-            '-6*T_aadc + 6*T_abab*s + 6*T_acad + 6*T_bcbd'
+            '-T_aadc + T_abab*s + T_acad + T_bcbd'
         )
 
     def test_o2_matrix(self):
@@ -267,7 +267,7 @@ class TestMolecule(unittest.TestCase):
         r = m.o2_matrix(u)
         self.assertEqual(
             str(r),
-            'Matrix([[4*K + 4*R, 8*M], [8*M, 4*J + 4*K]])'
+            'Matrix([[2*K + 2*R, 4*M], [4*M, 2*J + 2*K]])'
         )
 
     def test_o2_matrix_2(self):
@@ -288,7 +288,7 @@ class TestMolecule(unittest.TestCase):
         z = m.o2_matrix(P)
         self.assertEqual(
             str(z),
-            'Matrix([[4*J + 8*K + 16*M + 4*R, -4*J + 4*R], [-4*J + 4*R, 4*J + 8*K - 16*M + 4*R]])'
+            'Matrix([[2*J + 4*K + 8*M + 2*R, -2*J + 2*R], [-2*J + 2*R, 2*J + 4*K - 8*M + 2*R]])'
         )
 
     def test_build_matrix_2(self):
