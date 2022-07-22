@@ -3,6 +3,8 @@ from itertools import combinations
 
 from scipy.stats import rankdata
 import sympy
+
+import vbt3
 from vbt3.data import hperm
 
 
@@ -135,6 +137,17 @@ def standardize_det(s):
     return new_s, flips
 
 
+def standardize_det_2(d):
+    s, nflips = standardize_det(d.det_string)
+    result = vbt3.FixedPsi()
+    if nflips % 2 ==0:
+        coeff = 1
+    else:
+        coeff = -1
+    result.add_det(d, coef=coeff)
+    return result
+
+
 def sort_ind(v):
     z = rankdata(v, method='ordinal')
     h = {}
@@ -158,3 +171,16 @@ def simplify_matrix(mtx, factor=False):
                 result[i, j] = sympy.simplify(mtx[i, j])
     return result
 
+
+def sorti(s):
+    s2 = s
+    nperms = 0
+    for i in range(len(s) - 1):
+        jmin = i
+        for j in range(i + 1, len(s)):
+            if s2[j] < s2[jmin]:
+                jmin = j
+        if jmin != i:
+            s2 = s2[:i] + s2[jmin] + s2[i + 1:jmin] + s2[i] + s2[jmin + 1:]
+            nperms += 1
+    return s2, nperms

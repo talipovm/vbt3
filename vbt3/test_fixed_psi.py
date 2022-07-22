@@ -103,29 +103,29 @@ class TestMolecule(unittest.TestCase):
         r = SlaterDet('de') * fp
         self.assertEqual(
             str(r)
-            , '3|deab|+3|debc|'
+            , '3|abde|+3|bcde|'
         )
 
     def test_mult_5(self):
         f1 = SlaterDet('a') + SlaterDet('b')
         self.assertEqual(
             str(f1 * f1)
-            , '|aa|+|ab|+|ba|+|bb|'
+            , ''
         )
 
     def test_mult_6(self):
         f1 = SlaterDet('a') - SlaterDet('b')
         self.assertEqual(
             str(f1 * f1)
-            , '|aa|-|ab|-|ba|+|bb|'
+            , ''
         )
 
     def test_mult_7(self):
         f1 = SlaterDet('a') - SlaterDet('b')
-        r = f1 * f1 - FixedPsi('aa')
+        r = f1 * f1 - FixedPsi('aA')
         self.assertEqual(
             str(r)
-            , '-|ab|-|ba|+|bb|'
+            , '-|aA|'
         )
 
     def test_mult_8(self):
@@ -156,4 +156,15 @@ class TestMolecule(unittest.TestCase):
             '||'
         )
 
-
+    def test_mul_8(self):
+        c1 = SlaterDet('a') + SlaterDet('b')
+        C1 = SlaterDet('A') + SlaterDet('B')
+        c3 = SlaterDet('a') - SlaterDet('b')
+        C3 = SlaterDet('A') - SlaterDet('B')
+        a = c1 * C1
+        b = c3 * C3
+        res = a*b
+        self.assertEqual(
+            str(res),
+            '4|aAbB|'
+        )

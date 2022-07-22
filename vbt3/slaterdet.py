@@ -1,3 +1,4 @@
+from functions import sorti
 from vbt3.orbital_permutations import OrbitalPermutations
 import vbt3
 import logging
@@ -43,6 +44,11 @@ class SlaterDet:
         if isinstance(other, int) or isinstance(other, float):
             return vbt3.FixedPsi(self) * other
         if other.__class__.__name__ == 'SlaterDet':
+            # make sure we do not place two electrons on the same orbital
+            if len(set(self.alpha_string).intersection(set(other.alpha_string))) > 0:
+                return SlaterDet()
+            if len(set(self.beta_string).intersection(set(other.beta_string))) > 0:
+                return SlaterDet()
             return SlaterDet(self.det_string + other.det_string)
         if other.__class__.__name__ == 'FixedPsi':
             return vbt3.FixedPsi(self) * other
@@ -98,11 +104,36 @@ class SlaterDet:
     def is_compatible(self, R):
         if self.Nel != R.Nel:
             # logging.warning('Different number of electrons: %i vs %i' % (self.Nel, R.Nel))
-            return (False)
+            return False
         if self.spins != R.spins:
             # logging.warning('The determinant spins are incompatible: %s vs %s' % (self.spins, R.spins))
-            return (False)
-        return (True)
+            return False
+        return True
+
+    def get_sorted(self):
+        # sorts orbital labels in the determinant in alphabetic order
+        sa, ia = sorti(self.alpha_string)
+        sb, ib = sorti(self.beta_string)
+
+        s = self.det_string
+        d = SlaterDet(s)
+        for i in range(len(self.alpha_indices)):
+            j = self.alpha_indices[i]
+            s = s[:j] + sa[i] + s[j+1:]
+
+        for i in range(len(self.beta_indices)):
+            j = self.beta_indices[i]
+            s = s[:j] + sb[i] + s[j+1:]
+
+        d.det_string = s
+
+        if (ia + ib) % 2 == 0:
+            coef = 1
+        else:
+            coef = -1
+        fp = vbt3.FixedPsi()
+        fp.add_det(d, coef=coef)
+        return fp
 
 
 if __name__ == '__main__':

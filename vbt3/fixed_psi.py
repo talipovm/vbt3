@@ -1,5 +1,5 @@
 import vbt3
-from vbt3.functions import generate_det_strings
+from vbt3.functions import generate_det_strings, standardize_det, standardize_det_2
 from vbt3.functions import attempt_int
 import copy
 
@@ -66,7 +66,14 @@ class FixedPsi:
             result = FixedPsi()
             for dS, cS in self:
                 for dO, cO in other:
-                    result.add_det(dS * dO, cS * cO)
+                    d = dS * dO
+                    if d.Nel == 0:
+                        continue
+                    fp1 = d.get_sorted()
+                    c1, d1 = fp1.coefs[0], fp1.dets[0]
+                    fp2 = standardize_det_2(d1)
+                    result = result + (c1*cS*cO)*fp2
+                    # result.add_det(d, coef = cS * cO)
             return result
         return NotImplemented
 
@@ -94,7 +101,10 @@ class FixedPsi:
 
     def add_det(self, det, coef=+1):
         assert det.__class__.__name__ == 'SlaterDet'
-        assert det not in self
+        if det.Nel == 0:
+            return
+        if det in self:
+            return
         assert self.Nel in (0, det.Nel)
 
         for i in range(len(self)):

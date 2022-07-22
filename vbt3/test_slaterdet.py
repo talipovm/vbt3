@@ -31,6 +31,14 @@ class TestSlaterDet(unittest.TestCase):
             '|abcde|'
         )
 
+    def test_mul_4(self):
+        c1 = SlaterDet('aA')
+        C1 = SlaterDet('aB')
+        self.assertEqual(
+            str(c1*C1),
+            '||'
+        )
+
     def test_SlaterDet_1(self):
         self.assertEqual(
             SlaterDet('AbCd').spins,
