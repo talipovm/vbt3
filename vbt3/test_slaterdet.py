@@ -82,5 +82,12 @@ class TestSlaterDet(unittest.TestCase):
             '|aBcD|'
         )
 
+    def test_SlaterDet_8(self):
+        fp = SlaterDet('a') - 2 * SlaterDet('b')
+        self.assertEqual(
+            str(fp),
+            '|a|-2|b|'
+        )
+
 if __name__ == '__main__':
     unittest.main()

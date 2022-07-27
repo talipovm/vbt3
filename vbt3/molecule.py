@@ -4,16 +4,15 @@ from scipy.stats import rankdata
 
 from vbt3.functions import attempt_int, standardize_det, sort_ind, simplify_matrix
 from vbt3.numerical import get_coupled
-from vbt3.slaterdet import SlaterDet
 from vbt3.fixed_psi import FixedPsi, generate_dets
 from vbt3.numerical import get_combined_from_dict
 
 
 class Molecule:
-    # Perfect-pair expansion of determinants
+    # Contains molecule-specific information
     def __init__(self, symm_offdiagonal=True, normalized_basis_orbs=True,
                  interacting_orbs=None, subst=None, zero_ii=True,
-                 subst_2e=None, max_2e_centers = 4):
+                 subst_2e=None, max_2e_centers=4):
         """
         subst contains a list of substitutions to be made, eg ['S':('S_ab','S_bc','S_cd'),'H':('H_ab','H_bc')]
         zero_ii=True sets all H_ii terms to zero

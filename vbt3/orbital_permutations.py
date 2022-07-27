@@ -14,6 +14,9 @@ class OrbitalPermutations:
 
         self.get_permutation_indices(n)
 
+    def __iter__(self):
+        return zip(self.permutations, self.permutation_signs)
+
     def N_flips(self, v):
         # Computes the number of permutations from the consecutive order
         if len(v) == 0:

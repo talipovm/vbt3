@@ -80,8 +80,8 @@ class TestMolecule(unittest.TestCase):
 
     def test_op_6(self):
         self.assertEqual(
-            str(Molecule(zero_ii=False).Ops('AA', 'BB')),
-            '0'
+            str(Molecule(zero_ii=False).Ops('aA', 'bB')),
+            '2*H_ab*S_ab'
         )
 
     def test_op_7(self):
@@ -165,7 +165,7 @@ class TestMolecule(unittest.TestCase):
         result = m.couple(P, N_tries=20)
         self.assertEqual(
             str(result),
-            '[|aA|+|aC|+2|bB|+|cA|+|cC|, |aB|+|bA|+|bC|+|cB|]'
+            '[|aA|+1.414213562373|aB|+|aC|+1.414213562373|bA|+2|bB|+1.414213562373|bC|+|cA|+1.414213562373|cB|+|cC|]'
         )
 
     def test_o2_det_1(self):

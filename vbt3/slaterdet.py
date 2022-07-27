@@ -1,4 +1,4 @@
-from functions import sorti
+from vbt3.functions import sorti
 from vbt3.orbital_permutations import OrbitalPermutations
 import vbt3
 import logging
@@ -30,7 +30,7 @@ class SlaterDet:
         return vbt3.FixedPsi(self) + other
 
     def __sub__(self, other):
-        if self.det_string == other.det_string:
+        if other.__class__.__name__ == 'SlaterDet' and self.det_string == other.det_string:
             return SlaterDet()
         return vbt3.FixedPsi(self) + (-1) * other
 
@@ -66,10 +66,12 @@ class SlaterDet:
         i = 0
         for c in s:
             if c.islower():
+                assert c not in self.alpha_string # two electrons cannot occupy the same spinorbital
                 self.alpha_indices.append(i)
                 self.spins += '+'
                 self.alpha_string += c
             else:
+                assert c not in self.beta_string # two electrons cannot occupy the same spinorbital
                 self.beta_indices.append(i)
                 self.spins += '-'
                 self.beta_string += c
@@ -83,23 +85,23 @@ class SlaterDet:
 
         dets = []
         signs = []
-        for a_orbs, a_sign in zip(A.permutations, A.permutation_signs):
-            for b_orbs, b_sign in zip(B.permutations, B.permutation_signs):
+        for a_orbs, a_sign in A:
+            for b_orbs, b_sign in B:
                 i_a = 0
                 i_b = 0
                 s = ''
                 for i in range(len(self.det_string)):
                     if self.spins[i] == '+':
                         c = self.alpha_string[a_orbs[i_a]]
-                        i_a = i_a + 1
+                        i_a += 1
                     else:
                         c = self.beta_string[b_orbs[i_b]]
-                        i_b = i_b + 1
+                        i_b += 1
                     s = s + c
                 dets.append(s)
                 signs.append(a_sign * b_sign)
 
-        return ([dets, signs])
+        return [dets, signs]
 
     def is_compatible(self, R):
         if self.Nel != R.Nel:
@@ -112,6 +114,7 @@ class SlaterDet:
 
     def get_sorted(self):
         # sorts orbital labels in the determinant in alphabetic order
+        # returns FixedPsi
         sa, ia = sorti(self.alpha_string)
         sb, ib = sorti(self.beta_string)
 

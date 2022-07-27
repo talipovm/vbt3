@@ -3,8 +3,9 @@ from vbt3.functions import generate_det_strings, standardize_det, standardize_de
 from vbt3.functions import attempt_int
 import copy
 
+
 class FixedPsi:
-    # Perfect-pair expansion of determinants
+    # Linear combination of determinants
     def __init__(self, x=None, coupled_pairs=None):
         """
 
@@ -103,8 +104,7 @@ class FixedPsi:
         assert det.__class__.__name__ == 'SlaterDet'
         if det.Nel == 0:
             return
-        if det in self:
-            return
+
         assert self.Nel in (0, det.Nel)
 
         for i in range(len(self)):

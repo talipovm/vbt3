@@ -57,11 +57,11 @@ def repair_connections(coupled, z):
 
 
 @my_decor
-def single_trial(mH, mS, h, s, precision=12):
+def single_trial(mH, mS, nums, precision=12):
     N = mH.shape[0]
     # get the numeric eigenvectors
-    H = numpy.array(mH.subs({'h': h, 's': s})).astype(numpy.float64)
-    S = numpy.array(mS.subs({'s': s})).astype(numpy.float64)
+    H = numpy.array(mH.subs(nums)).astype(numpy.float64)
+    S = numpy.array(mS.subs(nums)).astype(numpy.float64)
     vals, vecs = scipy.linalg.eig(H, S)
     v = vecs[:, vals.argmin(0)]
 
@@ -83,8 +83,10 @@ def get_coupled(mS, mH, N_tries=10, precision=12, ranges={'h': (-1.0, 0.0), 's':
     """
     N = mH.shape[0]
 
-    hv = numpy.random.uniform(low=ranges['h'][0], high=ranges['h'][1], size=N_tries)
-    sv = numpy.random.uniform(low=ranges['s'][0], high=ranges['s'][1], size=N_tries)
+    nums = [{},]*N_tries
+    for i in range(N_tries):
+        for k, v in ranges.items():
+            nums[i][k] = numpy.random.uniform(low=v[0], high=v[1])
 
     fcs = [None, ] * N_tries
 
@@ -93,14 +95,14 @@ def get_coupled(mS, mH, N_tries=10, precision=12, ranges={'h': (-1.0, 0.0), 's':
         ray.init()
         ids = [None, ] * N_tries
         for trial in range(N_tries):
-            ids[trial] = single_trial.remote(mH, mS, hv[trial], sv[trial], precision=precision)
+            ids[trial] = single_trial.remote(mH, mS, nums[trial], precision=precision)
         # Block until the tasks are done and get the results.
         fcs = ray.get(ids)
         ray.shutdown()
     else:
         # Single core
         for trial in range(N_tries):
-            fcs[trial] = single_trial(mH, mS, hv[trial], sv[trial], precision=precision)
+            fcs[trial] = single_trial(mH, mS, nums[trial], precision=precision)
 
     # check if the coefficient ratios differ from the first value
     b = numpy.ones((N, N))
