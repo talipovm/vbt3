@@ -162,10 +162,36 @@ class TestMolecule(unittest.TestCase):
     def test_couple2(self):
         m = Molecule(zero_ii=True, subst={'s': ('S_ab', 'S_bc'), 'h': ('H_ab', 'H_bc')}, interacting_orbs=['ab', 'bc'])
         P = generate_dets(1, 1, 3)
-        result = m.couple(P, N_tries=20)
+        result = m.couple(P, N_tries=5, ranges={'s':(.5,.6), 'h':(-.8,-.7)})
         self.assertEqual(
             str(result),
             '[|aA|+1.414213562373|aB|+|aC|+1.414213562373|bA|+2|bB|+1.414213562373|bC|+|cA|+1.414213562373|cB|+|cC|]'
+        )
+
+    def test_couple3(self):
+        m = Molecule(zero_ii=False,
+                     interacting_orbs=['ab'],
+                     subst={'H_aa': ['H_aa', 'H_bb']},
+                     subst_2e={'R': ('1111'), 'J': ('1212'), 'K': ('1122'), 'M': ('1112', '1121', '1222')},
+                     max_2e_centers=1
+                     )
+        #  K, J confirmed
+        nums = {'R': 0.77460594, 'M': 0.30930897, 'K': 0.15786578, 'J': 0.47804137,
+                'H_aa': -0.97949638, 'H_ab': -0.68286493,
+                'S_ab': 0.49648469}
+
+        P0 = generate_dets(1, 1, 2)
+        o2_1 = m.o2_matrix(P0)
+
+        S = m.build_matrix(P0, op='S')
+        H = m.build_matrix(P0, op='H')
+
+        P1 = m.couple(P0, mS=S, mH=H + o2_1,
+                      ranges={'H_aa': (-1.0, -0.8), 'H_ab': (-0.7, -0.5), 'S_ab': (0.05, 0.2), 'R': (.7, .8)})
+
+        self.assertEqual(
+            str(P1),
+            '[|aA|+|bB|, |aB|+|bA|]'
         )
 
     def test_o2_det_1(self):

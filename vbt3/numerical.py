@@ -83,8 +83,9 @@ def get_coupled(mS, mH, N_tries=10, precision=12, ranges={'h': (-1.0, 0.0), 's':
     """
     N = mH.shape[0]
 
-    nums = [{},]*N_tries
+    nums = [None,]*N_tries
     for i in range(N_tries):
+        nums[i] = {}
         for k, v in ranges.items():
             nums[i][k] = numpy.random.uniform(low=v[0], high=v[1])
 

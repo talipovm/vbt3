@@ -308,7 +308,7 @@ class Molecule:
         else:
             return E / S
 
-    def couple(self, P=None, mS=None, mH=None, N_tries=10, precision=12, ranges={'h':(-1.0,0.0),'s':(0.0,1.0)}):
+    def couple(self, P=None, mS=None, mH=None, N_tries=10, precision=12, ranges={'h':(-1.0,0.0),'s':(0.0,1.0)}, nums=None):
         """
         Group the FixedPsi objects that have constant ratios in the lowest energy wave vector
         The constant ratios are found by numerical simulation
@@ -321,7 +321,18 @@ class Molecule:
             mS = self.build_matrix(P, op='S')
         if mH is None:
             mH = self.build_matrix(P, op='H')
-        couplings = get_coupled(mS=mS, mH=mH, N_tries=N_tries, precision=precision, ranges=ranges)
+
+        ranges2 = {}
+        symbols = mH.free_symbols.union(mS.free_symbols)
+        for s in symbols:
+            ss = str(s)
+            if ss in ranges:
+                ranges2[s] = ranges[ss]
+            else:
+                assert nums is not None and ss in nums, "Missing numerical value for the parameter " + ss
+                ranges2[s] = (nums[ss], nums[ss])
+
+        couplings = get_coupled(mS=mS, mH=mH, N_tries=N_tries, precision=precision, ranges=ranges2)
         return get_combined_from_dict(P, couplings)
 
     def get_o2_name(self, v):
